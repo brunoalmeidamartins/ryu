@@ -10,6 +10,8 @@ from ryu.lib.packet import ether_types
 from ryu.lib.packet import arp
 from ryu.lib.packet import ipv4
 from ryu.lib.packet import icmp
+from ryu.lib.packet import tcp
+from ryu.lib.packet import udp
 #Extras
 from ryu.lib.dpid import dpid_to_str
 from ryu.ofproto.ofproto_v1_2 import OFPG_ANY
@@ -120,6 +122,9 @@ class MeuApp(app_manager.RyuApp):
         #print(mod)
         print('------------------------------------------')
         print(' ')
+    '''
+    Area do Packet_In
+    '''
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
     def _packet_in_handler(self, ev):
         '''
@@ -147,6 +152,7 @@ class MeuApp(app_manager.RyuApp):
         datapath = msg.datapath
         ofproto = datapath.ofproto
         parser = datapath.ofproto_parser
+        #print(dir(parser))
         in_port = msg.match['in_port']
 
         pkt = packet.Packet(msg.data)
@@ -170,7 +176,18 @@ class MeuApp(app_manager.RyuApp):
             self.logger.info("Pacote ICMP")
             return
         if pkt_ipv4:
+            #(pkt_ipv4)
+            if pkt_ipv4.proto == 17:
+                print('Esse pacote eh UDP!!')
+            else:
+                print('Esse pacote nao eh UDP!!!')
             self.logger.info("Pacote IPV4")
+
+            t = pkt.get_protocol(udp.udp)
+            if t:
+                print("Agora sim!!")
+                print(t)
+
             return
 
 
@@ -188,6 +205,12 @@ class MeuApp(app_manager.RyuApp):
             actions=actions)
         dp.send_msg(out)
         '''
+
+
+    '''
+    FIM Area do Packet_In
+    '''
+
     '''
     Apaga Regras Swithc
     '''
