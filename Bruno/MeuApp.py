@@ -177,18 +177,25 @@ class MeuApp(app_manager.RyuApp):
             return
         if pkt_ipv4:
             #(pkt_ipv4)
+            '''
             if pkt_ipv4.proto == 17:
                 print('Esse pacote eh UDP!!')
             else:
                 print('Esse pacote nao eh UDP!!!')
             self.logger.info("Pacote IPV4")
+            '''
+            pkt_udp = pkt.get_protocol(udp.udp)
+            if pkt_udp:
+                if pkt_udp.dst_port == 1234:
+                    print("UDP na Porta 1234")
+                else:
+                    print("UDP!! Nao eh a porta 1234")
+                #if pkt_udp.
+                print(" ")
+                print(" ")
+                #print(t)
 
-            t = pkt.get_protocol(udp.udp)
-            if t:
-                print("Agora sim!!")
-                print(t)
-
-            return
+            #return
 
 
         #dst = eth.dst
