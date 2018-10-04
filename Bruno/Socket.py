@@ -8,9 +8,10 @@ import pickle
 import time
 from rsvpserver import Rsvpserver
 
-host = ''						#Servidor escutando em todas as portas
+host = '10.0.0.99'						#Servidor escutando em todas as portas
 #port = int(sys.argv[1])				#Porta do servidor obtida atraves da CLI
-port = 23000						#Porta do servidor obtida atraves da CLI
+#port = 23000						#Porta do servidor obtida atraves da CLI
+port = 1234
 '''
 filetest = 'testfile3.mov'				#Arquivo de teste
 #filename = '/home/bruno/pox/ext/classes.conf'	#Arquivo de lista de objetos Classe

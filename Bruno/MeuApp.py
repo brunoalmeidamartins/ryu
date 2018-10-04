@@ -29,12 +29,20 @@ SERVER_PORT = 23000
 ##### Vazao maxima da rede (bps)
 TX_MAX = 1000000000
 
+#Ip de comunicacao com Controlador
+IP_SERVER_QoS = '10.0.0.99'
 
+#MAC do Controlador
+MAC_SERVER_QoS = 'ff:ff:ff:00:00:00'
 
+#Id do Switch onde esta os Servidores
+ID_SWITCH = 3
 
+#Porta que vai gerar o Packet_In
+PORTA_Packet_In = 1234
 
-
-
+#Mapeamento id em dpid
+table_id = []
 
 class MeuApp(app_manager.RyuApp):
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
@@ -101,9 +109,18 @@ class MeuApp(app_manager.RyuApp):
         Area de testes
         '''
         try:
-            r = requests.put('http://localhost:8080/v1.0/conf/switches/0000000000000001/ovsdb_addr','"tcp:127.0.0.1:6632"')
-            r2 = requests.put('http://localhost:8080/v1.0/conf/switches/0000000000000002/ovsdb_addr','"tcp:127.0.0.1:6632"')
             print('Cheguei aqui!!')
+            #O processo faz um mapeamento de id em dpid
+            tamanho_num = len(str(datapath.id))
+            dpid_mont = ''
+            for i in range(0,(16-tamanho_num)):
+                dpid_mont = dpid_mont+'0'
+            dpid_mont = dpid_mont+str(datapath.id)
+            table_id.append([datapath.id,dpid_mont])
+            #Insere ovs-manager em cada Switch para o REST
+            r = requests.put('http://localhost:8080/v1.0/conf/switches/'+dpid_mont+'/ovsdb_addr','"tcp:127.0.0.1:6632"')
+            #r2 = requests.put('http://localhost:8080/v1.0/conf/switches/0000000000000002/ovsdb_addr','"tcp:127.0.0.1:6632"')
+
             #r3 = requests.post('http://localhost:8080/qos/rules/0000000000000001','{"match": {tp_dst": "5002"}, "actions":{"port":'+str(ofproto.OFPP_CONTROLLER)+'}}')
             #r4 = requests.post('http://localhost:8080/qos/rules/0000000000000002','{"match": {tp_dst": "5002"}, "actions":{"port":'+str(ofproto.OFPP_CONTROLLER)+'}}')
             #r3 = requests.get('http://localhost:8080/stats/switches') #Pega todos os switches
@@ -124,7 +141,7 @@ class MeuApp(app_manager.RyuApp):
             Regra de Packet In para QoS
             '''
             id_switch = datapath.id
-            os.system('ovs-ofctl add-flow s' + str(id_switch) + ' priority=40000,dl_type=0x0800,nw_proto=17,tp_dst=1234,actions=output:controller')
+            os.system('ovs-ofctl add-flow s' + str(id_switch) + ' priority=40000,dl_type=0x0800,nw_proto=17,tp_dst='+str(PORTA_Packet_In)+',actions=output:controller')
             '''
             Fim Regra de Packet In para QoS
             '''
@@ -181,32 +198,75 @@ class MeuApp(app_manager.RyuApp):
         if not pkt_ethernet:
             self.logger.info("Pacote Nao Sei!!")
             return
+
+
+
+        #Se for pacote ARP
         pkt_arp = pkt.get_protocol(arp.arp)
         if pkt_arp:
             self.logger.info("Pacote ARP")
+            print(pkt_arp)
+            if str(pkt_arp.dst_ip) == IP_SERVER_QoS: #Enviar ARP response com o MAC
+                #print('Responder o arp com MAC do Servidor')
+                if pkt_arp.opcode == arp.ARP_REQUEST:
+                    #print('Quer o ARP do servidor_QoS')
+                    port1 = msg.match['in_port']
+                    pkt = packet.Packet()
+                    pkt.add_protocol(ethernet.ethernet(ethertype=pkt_ethernet.ethertype,
+                                                       dst=pkt_ethernet.src,
+                                                       src=MAC_SERVER_QoS))
+                    pkt.add_protocol(arp.arp(opcode=arp.ARP_REPLY,
+                                             src_mac=MAC_SERVER_QoS,
+                                             src_ip=IP_SERVER_QoS,
+                                             dst_mac=pkt_arp.src_mac,
+                                             dst_ip=pkt_arp.src_ip))
+                    self._send_packet(datapath, port1, pkt)
             return
-        pkt_ipv4 = pkt.get_protocol(ipv4.ipv4)
+
+
+
+
+
+        #Se for ICMP
         pkt_icmp = pkt.get_protocol(icmp.icmp)
         if pkt_icmp:
             #self._handle_icmp(datapath, port, pkt_ethernet, pkt_ipv4, pkt_icmp)
             self.logger.info("Pacote ICMP")
             return
+
+        #Se for IPv4
+        pkt_ipv4 = pkt.get_protocol(ipv4.ipv4)
         if pkt_ipv4:
-            #(pkt_ipv4)
-            '''
-            if pkt_ipv4.proto == 17:
-                print('Esse pacote eh UDP!!')
-            else:
-                print('Esse pacote nao eh UDP!!!')
-            self.logger.info("Pacote IPV4")
-            '''
             pkt_udp = pkt.get_protocol(udp.udp)
             if pkt_udp:
                 if pkt_udp.dst_port == 1234:
-                    print("UDP na Porta 1234")
-                    print('Abrindo Socket de Comunicacao!!')
-                    print(str(msg.data))
-                    print('Fechando o Socket')
+                    #print("UDP na Porta 1234")
+                    if pkt_ipv4.dst == IP_SERVER_QoS:
+                        #Responde o Pacote UDP Vindo!!
+                        #print('Eh para o servidor QoS... Responnder')
+                        pkt2 = pkt.get_protocol(ethernet.ethernet)
+                        port1 = msg.match['in_port']
+                        pkt_resp = packet.Packet()
+                        e = ethernet.ethernet(ethertype=pkt2.ethertype,dst=pkt_ethernet.src,src=MAC_SERVER_QoS) #Parte da camada Rede
+                        i = ipv4.ipv4(dst=pkt_ipv4.src,src=IP_SERVER_QoS,proto=17) #Parte do IP
+                        u = udp.udp(dst_port=pkt_udp.src_port,src_port=1234) #Parte do UDP
+                        pkt_resp = e/i/u #Monta o pacote
+                        self._send_packet(datapath, port1, pkt_resp)
+                        #print('Pacote respondido!!!')
+                        #Fim da resposta do Pacote UDP!!
+
+                        #Verificando os dados Gravados no arquivo!!
+                        #Somente para o Swtich onde esta os Servidores
+                        if datapath.id == ID_SWITCH:
+                            arq = open('/home/bruno/ryu/Bruno/Dados_QoS_Servidor.txt','r')
+                            texto = arq.read()
+                            print('-----------------------')
+                            print(texto)
+                            print('-----------------------')
+
+
+
+
                 else:
                     print("UDP!! Nao eh a porta 1234")
                 #if pkt_udp.
@@ -264,3 +324,30 @@ class MeuApp(app_manager.RyuApp):
     '''
     FIM Apaga Regras Swithc
     '''
+
+
+    '''
+    Envia Pacote para Host
+    '''
+    def _send_packet(self, datapath, port, pkt):
+        ofproto = datapath.ofproto
+        parser = datapath.ofproto_parser
+        pkt.serialize()
+        #self.logger.info("packet-out %s" % (pkt,))
+        data = pkt.data
+        actions = [parser.OFPActionOutput(port=port)]
+        out = parser.OFPPacketOut(datapath=datapath,
+                                  buffer_id=ofproto.OFP_NO_BUFFER,
+                                  in_port=ofproto.OFPP_CONTROLLER,
+                                  actions=actions,
+                                  data=data)
+        datapath.send_msg(out)
+    '''
+    FIM Envia Pacote para Host
+    '''
+#Tudo o que eu quiser iniciar, basta colocar aqui!!
+#Require
+app_manager.require_app('ryu.app.ofctl_rest')
+app_manager.require_app('ryu.app.simple_switch_13_mod')
+app_manager.require_app('ryu.app.rest_conf_switch')
+app_manager.require_app('ryu.app.rest_topology')
