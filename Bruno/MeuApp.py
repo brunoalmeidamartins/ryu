@@ -20,6 +20,22 @@ import os
 
 import requests
 
+'''
+Itens copiado do l3-qos-> Alexandre
+'''
+##### Porta do servidor
+SERVER_PORT = 23000
+
+##### Vazao maxima da rede (bps)
+TX_MAX = 1000000000
+
+
+
+
+
+
+
+
 class MeuApp(app_manager.RyuApp):
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
 
@@ -188,6 +204,9 @@ class MeuApp(app_manager.RyuApp):
             if pkt_udp:
                 if pkt_udp.dst_port == 1234:
                     print("UDP na Porta 1234")
+                    print('Abrindo Socket de Comunicacao!!')
+                    print(str(msg.data))
+                    print('Fechando o Socket')
                 else:
                     print("UDP!! Nao eh a porta 1234")
                 #if pkt_udp.

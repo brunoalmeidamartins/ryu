@@ -10,7 +10,10 @@ ip = IP(dst=dest)
 
 udp = UDP(dport=int(destport))
 
-pkt = ip/udp
+raw = Raw(b'Olaa')
+
+pkt = ip/udp/raw
+
 
 t = sr(pkt)
 #sr(pkt)
