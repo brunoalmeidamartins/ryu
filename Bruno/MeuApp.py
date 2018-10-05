@@ -19,7 +19,7 @@ from ryu.lib.mac import haddr_to_bin
 #Topologia
 from ryu.topology import event, switches
 from ryu.topology.api import get_switch, get_link
-#import networkx as nx
+import networkx as nx
 #Sistema
 import os
 import requests
@@ -217,6 +217,41 @@ class MeuApp(app_manager.RyuApp):
                 print('------------------')
 
 
+
+
+                '''
+                #Teste do networkx
+                dst = eth.dst
+                src = eth.src
+                dpid = datapath.id
+                self.mac_to_port.setdefault(dpid, {})
+                #print "nodes"
+                #print self.net.nodes()
+                #print "edges"
+                #print self.net.edges()
+                #self.logger.info("packet in %s %s %s %s", dpid, src, dst, msg.in_port)
+                if src not in self.net:
+                    self.net.add_node(src)
+                    porta1 = {'port':porta_host}
+                    print(self.net.add_edge)
+                    #self.net.add_edge(dpid,src,porta1)
+                    self.net.add_edge(src,dpid)
+                #if dst in self.net:
+                    #print (src in self.net)
+                    #print nx.shortest_path(self.net,1,4)
+                    #print nx.shortest_path(self.net,4,1)
+                    #print nx.shortest_path(self.net,src,4)
+
+                    #path=nx.shortest_path(self.net,src,dst)
+                    #next=path[path.index(dpid)+1]
+                    #out_port=self.net[dpid][next]['port']
+                print('-------------------------------')
+                print(self.net.nodes())
+                print(self.net.edges())
+                print('-------------------------------')
+                #FimTeste do networkx
+                '''
+
             #Fim Armazena tabela host->switch->porta
             #self.logger.info("Pacote ARP")
             #print(pkt_arp)
@@ -279,6 +314,42 @@ class MeuApp(app_manager.RyuApp):
                             print('-----------------------')
 
 
+                            print('-----------------------------')
+                            print('-------------Teste----------')
+                            switch_list = get_switch(self.topology_api_app, None)
+                            #switches=[switch.dp.id for switch in switch_list]
+                            for i in switch_list:
+                                print(i)
+                            '''
+                            Link: Port<dpid=2, port_no=1, LIVE> to Port<dpid=1, port_no=5, LIVE>
+                            Link: Port<dpid=1, port_no=5, LIVE> to Port<dpid=2, port_no=1, LIVE>
+                            Link: Port<dpid=3, port_no=5, LIVE> to Port<dpid=2, port_no=2, LIVE>
+                            Link: Port<dpid=2, port_no=2, LIVE> to Port<dpid=3, port_no=5, LIVE>
+
+                            '''
+
+                            links_1 = get_link(self.topology_api_app, None)
+                            for i in links_1:
+                                #Para cada i
+                                #links=[(link.src.dpid,link.dst.dpid,{'port':link.src.port_no}) for link in links_list]
+                                a = str(i)
+                                vet = a.split(',')
+                                vet_aux = []
+                                for t in range(0,len(vet)):
+                                    if t == 4:
+                                        pass
+                                    else:
+                                        vet_aux.append(vet[t])
+                                vet = vet_aux
+                                print(vet)
+                                pass
+
+
+                            print('-----------------------------')
+                            print('-------------FIM Teste----------')
+
+
+                            #print(self.net)
 
 
                 else:
@@ -364,6 +435,7 @@ class MeuApp(app_manager.RyuApp):
     Monta topologia #Codigo copiado do Site:
     https://sdn-lab.com/2014/12/25/shortest-path-forwarding-with-openflow-on-ryu/
     https://github.com/osrg/ryu/pull/29/commits/4487c9272e69ab93139baf6a2ee48f3b31bb4f02
+    https://github.com/castroflavio/ryu
     '''
     @set_ev_cls(event.EventSwitchEnter)
     def get_topology_data(self, ev):
@@ -371,12 +443,21 @@ class MeuApp(app_manager.RyuApp):
         switches=[switch.dp.id for switch in switch_list]
         #self.net.add_nodes_from(switches)
         links_list = get_link(self.topology_api_app, None)
+
         links=[(link.src.dpid,link.dst.dpid,{'port':link.src.port_no}) for link in links_list]
         #self.net.add_edges_from(links)
         links=[(link.dst.dpid,link.src.dpid,{'port':link.dst.port_no}) for link in links_list]
         #self.net.add_edges_from(links)
+        print('-------------------------')
+        print('**************Switches****************')
         print(switches)
+        print('**************Links****************')
         print(links)
+        print('-------------------------')
+        print('**************Links_list_teste****************')
+        for i in links_list:
+            print(i)
+        print('-------------------------')
         #print "**********List of links"
         #print self.net.edges()
     '''
