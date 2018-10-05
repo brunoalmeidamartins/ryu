@@ -16,8 +16,12 @@ from ryu.lib.packet import udp
 from ryu.lib.dpid import dpid_to_str
 from ryu.ofproto.ofproto_v1_2 import OFPG_ANY
 from ryu.lib.mac import haddr_to_bin
+#Topologia
+from ryu.topology import event, switches
+from ryu.topology.api import get_switch, get_link
+#import networkx as nx
+#Sistema
 import os
-
 import requests
 
 '''
@@ -44,11 +48,24 @@ PORTA_Packet_In = 1234
 #Mapeamento id em dpid
 table_id = []
 
+#Teste da Topologia
+TABLE_MAC_SWITCH = []
+#link_list = []
+
 class MeuApp(app_manager.RyuApp):
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
 
     def __init__(self, *args, **kwargs):
         super(MeuApp, self).__init__(*args, **kwargs)
+        self.mac_to_port = {}
+        self.topology_api_app = self
+        #self.net=nx.DiGraph()
+        self.nodes = {}
+        self.links = {}
+        self.no_of_nodes = 0
+        self.no_of_links = 0
+
+
     '''
     Envia a mensagem ao switch
     '''
@@ -66,15 +83,15 @@ class MeuApp(app_manager.RyuApp):
             mod = parser.OFPFlowMod(datapath=datapath, priority=priority,
                                     match=match, instructions=inst)
         datapath.send_msg(mod)
-        print(mod)
+        #print(mod)
 
     '''
     Instala regras na inicializacao
     '''
     @set_ev_cls(ofp_event.EventOFPSwitchFeatures, CONFIG_DISPATCHER)
     def _switch_features_handler(self, ev):
-        print('------------------------------------------')
-        print('Dentro do Evento Inicial!!')
+        #print('------------------------------------------')
+        #print('Dentro do Evento Inicial!!')
         """Handle switch features reply to remove flow entries in table 0 and 1."""
         msg = ev.msg
         datapath = msg.datapath
@@ -109,7 +126,7 @@ class MeuApp(app_manager.RyuApp):
         Area de testes
         '''
         try:
-            print('Cheguei aqui!!')
+            #print('Cheguei aqui!!')
             #O processo faz um mapeamento de id em dpid
             tamanho_num = len(str(datapath.id))
             dpid_mont = ''
@@ -160,43 +177,24 @@ class MeuApp(app_manager.RyuApp):
     '''
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
     def _packet_in_handler(self, ev):
-        '''
-        msg = ev.msg
-        datapath = msg.datapath
-        id_switch = datapath.id
-        if id_switch == 1:
-            #r3 = requests.post('http://localhost:8080/stats/flowentry/add','{"dpid":1,"priority":2,"match": {"udp_dst": "5002"}, "actions":[{"port":'+str(ofproto.OFPP_CONTROLLER)+'}]}')
-            #r3 = requests.post('http://localhost:8080/stats/flowentry/add','{"dpid":1,"priority":2,"match": {"udp_dst": "5002"}, "actions":[{"port":1}]}')
-            r3 = requests.post('http://localhost:8080/stats/flowentry/add','{"dpid":1,"priority":2,"match": {"udp_dst": "5002"}, "actions":[{"type":"OUTPUT","port":1}]}')
-
-            print(r3.text)
-        #print('Deu certo!!')
-        '''
-        '''
-        msg = ev.msg
-        pkt = packet.Packet(msg.data)
-        eth_pkt = pkt.get_protocol(ethernet.ethernet)
-        dst = eth_pkt.dst
-        src = eth_pkt.src
-
-        print(str(src)+' -> '+str(dst))
-        '''
         msg = ev.msg
         datapath = msg.datapath
         ofproto = datapath.ofproto
         parser = datapath.ofproto_parser
-        #print(dir(parser))
-        in_port = msg.match['in_port']
 
         pkt = packet.Packet(msg.data)
         eth = pkt.get_protocols(ethernet.ethernet)[0]
+        #print(dir(parser))
+
+
+
         pkt_ethernet = pkt.get_protocol(ethernet.ethernet)
         if eth.ethertype == ether_types.ETH_TYPE_LLDP:
             # ignore lldp packet
-            self.logger.info("Pacote LLDP")
+            #self.logger.info("Pacote LLDP")
             return
         if not pkt_ethernet:
-            self.logger.info("Pacote Nao Sei!!")
+            #self.logger.info("Pacote Nao Sei!!")
             return
 
 
@@ -204,8 +202,24 @@ class MeuApp(app_manager.RyuApp):
         #Se for pacote ARP
         pkt_arp = pkt.get_protocol(arp.arp)
         if pkt_arp:
-            self.logger.info("Pacote ARP")
-            print(pkt_arp)
+            #Armazena tabela host->switch->porta
+            dst = eth.dst
+            src = eth.src
+            dpid = datapath.id
+            porta_host = msg.match['in_port'] #Porta onde gerou o evento
+            lista_comparacao = []
+            for i in TABLE_MAC_SWITCH:
+                lista_comparacao.append(i[0])
+            if str(src) not in lista_comparacao:
+                TABLE_MAC_SWITCH.append([str(src),dpid,porta_host])
+                print('------------------')
+                print(TABLE_MAC_SWITCH)
+                print('------------------')
+
+
+            #Fim Armazena tabela host->switch->porta
+            #self.logger.info("Pacote ARP")
+            #print(pkt_arp)
             if str(pkt_arp.dst_ip) == IP_SERVER_QoS: #Enviar ARP response com o MAC
                 #print('Responder o arp com MAC do Servidor')
                 if pkt_arp.opcode == arp.ARP_REQUEST:
@@ -231,7 +245,7 @@ class MeuApp(app_manager.RyuApp):
         pkt_icmp = pkt.get_protocol(icmp.icmp)
         if pkt_icmp:
             #self._handle_icmp(datapath, port, pkt_ethernet, pkt_ipv4, pkt_icmp)
-            self.logger.info("Pacote ICMP")
+            #self.logger.info("Pacote ICMP")
             return
 
         #Se for IPv4
@@ -345,6 +359,31 @@ class MeuApp(app_manager.RyuApp):
     '''
     FIM Envia Pacote para Host
     '''
+
+    '''
+    Monta topologia #Codigo copiado do Site:
+    https://sdn-lab.com/2014/12/25/shortest-path-forwarding-with-openflow-on-ryu/
+    https://github.com/osrg/ryu/pull/29/commits/4487c9272e69ab93139baf6a2ee48f3b31bb4f02
+    '''
+    @set_ev_cls(event.EventSwitchEnter)
+    def get_topology_data(self, ev):
+        switch_list = get_switch(self.topology_api_app, None)
+        switches=[switch.dp.id for switch in switch_list]
+        #self.net.add_nodes_from(switches)
+        links_list = get_link(self.topology_api_app, None)
+        links=[(link.src.dpid,link.dst.dpid,{'port':link.src.port_no}) for link in links_list]
+        #self.net.add_edges_from(links)
+        links=[(link.dst.dpid,link.src.dpid,{'port':link.dst.port_no}) for link in links_list]
+        #self.net.add_edges_from(links)
+        print(switches)
+        print(links)
+        #print "**********List of links"
+        #print self.net.edges()
+    '''
+    Fim Monta topologia
+    '''
+
+
 #Tudo o que eu quiser iniciar, basta colocar aqui!!
 #Require
 app_manager.require_app('ryu.app.ofctl_rest')
