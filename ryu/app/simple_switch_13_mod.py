@@ -15,6 +15,7 @@
 
 '''
 1 - Mudei a tempo da regra no switch
+2 - Parei os logs de pacotes
 '''
 
 from ryu.base import app_manager
@@ -72,8 +73,9 @@ class SimpleSwitch13(app_manager.RyuApp):
         # If you hit this you might want to increase
         # the "miss_send_length" of your switch
         if ev.msg.msg_len < ev.msg.total_len:
-            self.logger.debug("packet truncated: only %s of %s bytes",
-                              ev.msg.msg_len, ev.msg.total_len)
+            #Parei o log de pacotes
+            #self.logger.debug("packet truncated: only %s of %s bytes",ev.msg.msg_len, ev.msg.total_len)
+            pass
         msg = ev.msg
         datapath = msg.datapath
         ofproto = datapath.ofproto
@@ -92,7 +94,8 @@ class SimpleSwitch13(app_manager.RyuApp):
         dpid = datapath.id
         self.mac_to_port.setdefault(dpid, {})
 
-        self.logger.info("packet in %s %s %s %s", dpid, src, dst, in_port)
+        #Parei o log de pacotes
+        #self.logger.info("packet in %s %s %s %s", dpid, src, dst, in_port)
 
         # learn a mac address to avoid FLOOD next time.
         self.mac_to_port[dpid][src] = in_port

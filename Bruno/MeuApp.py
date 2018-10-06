@@ -19,7 +19,7 @@ from ryu.lib.mac import haddr_to_bin
 #Topologia
 from ryu.topology import event, switches
 from ryu.topology.api import get_switch, get_link
-import networkx as nx
+#import networkx as nx
 #Sistema
 import os
 import requests
@@ -51,6 +51,11 @@ table_id = []
 #Teste da Topologia
 TABLE_MAC_SWITCH = []
 #link_list = []
+
+#Tabelas
+TABELA_SWITCH = []
+TABELA_IP_SWITCH = [] #Mapea a saida do IP para cada switch
+TABELA_MAC_SWITCH = [] #Mapea a saida de MAC para cada switch
 
 class MeuApp(app_manager.RyuApp):
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
@@ -184,11 +189,21 @@ class MeuApp(app_manager.RyuApp):
 
         pkt = packet.Packet(msg.data)
         eth = pkt.get_protocols(ethernet.ethernet)[0]
-        #print(dir(parser))
 
-
-
+        #Tipos de pacotes
         pkt_ethernet = pkt.get_protocol(ethernet.ethernet)
+        pkt_arp = pkt.get_protocol(arp.arp)
+        pkt_icmp = pkt.get_protocol(icmp.icmp)
+        pkt_ipv4 = pkt.get_protocol(ipv4.ipv4)
+        pkt_udp = pkt.get_protocol(udp.udp)
+
+
+        #Preenche as tabelas de IP e MAC
+        #self.preencheTabelaIP(pkt)
+        #self.preencheTabelaMAC(pkt)
+
+
+        #Pacote ethernet
         if eth.ethertype == ether_types.ETH_TYPE_LLDP:
             # ignore lldp packet
             #self.logger.info("Pacote LLDP")
@@ -200,7 +215,6 @@ class MeuApp(app_manager.RyuApp):
 
 
         #Se for pacote ARP
-        pkt_arp = pkt.get_protocol(arp.arp)
         if pkt_arp:
             #Armazena tabela host->switch->porta
             dst = eth.dst
@@ -213,48 +227,27 @@ class MeuApp(app_manager.RyuApp):
             if str(src) not in lista_comparacao:
                 TABLE_MAC_SWITCH.append([str(src),dpid,porta_host])
                 print('------------------')
+                print('Tabela onde esta o HOST')
                 print(TABLE_MAC_SWITCH)
+                print('------------------')
+            lista_comparacao2 = []
+            for i in TABELA_MAC_SWITCH:
+                a = i[0].replace(':','')
+                b = a + str(i[1]) + str(i[2])
+                c = int(b)
+                lista_comparacao2.append(c)
+            d = str(src).replace(':','')
+            e = d + str(dpid) + str(porta_host)
+            f = int(e)
+            if f not in lista_comparacao2:
+                TABELA_MAC_SWITCH.append([str(src),dpid,porta_host])
+                print('------------------')
+                print('Tabela de mapeamento switch->Saida')
+                print(TABELA_MAC_SWITCH)
                 print('------------------')
 
 
 
-
-                '''
-                #Teste do networkx
-                dst = eth.dst
-                src = eth.src
-                dpid = datapath.id
-                self.mac_to_port.setdefault(dpid, {})
-                #print "nodes"
-                #print self.net.nodes()
-                #print "edges"
-                #print self.net.edges()
-                #self.logger.info("packet in %s %s %s %s", dpid, src, dst, msg.in_port)
-                if src not in self.net:
-                    self.net.add_node(src)
-                    porta1 = {'port':porta_host}
-                    print(self.net.add_edge)
-                    #self.net.add_edge(dpid,src,porta1)
-                    self.net.add_edge(src,dpid)
-                #if dst in self.net:
-                    #print (src in self.net)
-                    #print nx.shortest_path(self.net,1,4)
-                    #print nx.shortest_path(self.net,4,1)
-                    #print nx.shortest_path(self.net,src,4)
-
-                    #path=nx.shortest_path(self.net,src,dst)
-                    #next=path[path.index(dpid)+1]
-                    #out_port=self.net[dpid][next]['port']
-                print('-------------------------------')
-                print(self.net.nodes())
-                print(self.net.edges())
-                print('-------------------------------')
-                #FimTeste do networkx
-                '''
-
-            #Fim Armazena tabela host->switch->porta
-            #self.logger.info("Pacote ARP")
-            #print(pkt_arp)
             if str(pkt_arp.dst_ip) == IP_SERVER_QoS: #Enviar ARP response com o MAC
                 #print('Responder o arp com MAC do Servidor')
                 if pkt_arp.opcode == arp.ARP_REQUEST:
@@ -277,16 +270,13 @@ class MeuApp(app_manager.RyuApp):
 
 
         #Se for ICMP
-        pkt_icmp = pkt.get_protocol(icmp.icmp)
         if pkt_icmp:
             #self._handle_icmp(datapath, port, pkt_ethernet, pkt_ipv4, pkt_icmp)
             #self.logger.info("Pacote ICMP")
             return
 
         #Se for IPv4
-        pkt_ipv4 = pkt.get_protocol(ipv4.ipv4)
         if pkt_ipv4:
-            pkt_udp = pkt.get_protocol(udp.udp)
             if pkt_udp:
                 if pkt_udp.dst_port == 1234:
                     #print("UDP na Porta 1234")
@@ -309,24 +299,27 @@ class MeuApp(app_manager.RyuApp):
                         if datapath.id == ID_SWITCH:
                             arq = open('/home/bruno/ryu/Bruno/Dados_QoS_Servidor.txt','r')
                             texto = arq.read()
+
+
                             print('-----------------------')
                             print(texto)
+                            arq.close()
                             print('-----------------------')
 
-
+                            '''
                             print('-----------------------------')
                             print('-------------Teste----------')
                             switch_list = get_switch(self.topology_api_app, None)
                             #switches=[switch.dp.id for switch in switch_list]
                             for i in switch_list:
                                 print(i)
-                            '''
+
                             Link: Port<dpid=2, port_no=1, LIVE> to Port<dpid=1, port_no=5, LIVE>
                             Link: Port<dpid=1, port_no=5, LIVE> to Port<dpid=2, port_no=1, LIVE>
                             Link: Port<dpid=3, port_no=5, LIVE> to Port<dpid=2, port_no=2, LIVE>
                             Link: Port<dpid=2, port_no=2, LIVE> to Port<dpid=3, port_no=5, LIVE>
 
-                            '''
+
 
                             links_1 = get_link(self.topology_api_app, None)
                             for i in links_1:
@@ -347,6 +340,7 @@ class MeuApp(app_manager.RyuApp):
 
                             print('-----------------------------')
                             print('-------------FIM Teste----------')
+                            '''
 
 
                             #print(self.net)
@@ -380,6 +374,33 @@ class MeuApp(app_manager.RyuApp):
 
     '''
     FIM Area do Packet_In
+    '''
+
+    '''
+    Preenche as tabelas do IP_SwITCH e MAC_SWITCH
+    '''
+    '''
+    def preencheTabelaIP(pkt):
+        pkt_arp = pkt.get_protocol(arp.arp)
+        pkt_icmp = pkt.get_protocol(icmp.icmp)
+        pkt_ipv4 = pkt.get_protocol(ipv4.ipv4)
+        if pkt_arp:
+            pass
+        elif pkt_icmp:
+            pass
+        elif pkt_ipv4:
+            pass
+        else:
+            #Faz nada!!
+
+    def preencheTabelaMAC(pkt):
+        pkt_arp = pkt.get_protocol(arp.arp)
+        pkt_icmp = pkt.get_protocol(icmp.icmp)
+        pkt_ipv4 = pkt.get_protocol(ipv4.ipv4)
+
+    '''
+    '''
+    FIM Preenche as tabelas do IP_SwITCH e MAC_SWITCH
     '''
 
     '''
@@ -460,6 +481,9 @@ class MeuApp(app_manager.RyuApp):
         print('-------------------------')
         #print "**********List of links"
         #print self.net.edges()
+
+        #Tabela de Switch recebe os Switches que existem
+        TABELA_SWITCH = switches
     '''
     Fim Monta topologia
     '''
