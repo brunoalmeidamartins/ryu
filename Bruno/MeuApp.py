@@ -53,7 +53,6 @@ TABLE_MAC_SWITCH = []
 #link_list = []
 
 #Tabelas
-TABELA_SWITCH = []
 TABELA_IP_SWITCH = [] #Mapea a saida do IP para cada switch
 TABELA_MAC_SWITCH = [] #Mapea a saida de MAC para cada switch
 
@@ -222,24 +221,21 @@ class MeuApp(app_manager.RyuApp):
             dpid = datapath.id
             porta_host = msg.match['in_port'] #Porta onde gerou o evento
             lista_comparacao = []
+            src_ip = pkt_arp.src_ip
             for i in TABLE_MAC_SWITCH:
                 lista_comparacao.append(i[0])
             if str(src) not in lista_comparacao:
-                TABLE_MAC_SWITCH.append([str(src),dpid,porta_host])
+                TABLE_MAC_SWITCH.append([str(src),dpid,porta_host]) #Preenche a tabela de MAC
+                TABELA_IP_SWITCH.append([str(src_ip),str(src)]) #Preenche a tabela de IPs->MAC
                 print('------------------')
                 print('Tabela onde esta o HOST')
                 print(TABLE_MAC_SWITCH)
+                print('IP HOST -> MAC HOST')
+                print(TABELA_IP_SWITCH)
                 print('------------------')
             lista_comparacao2 = []
             for i in TABELA_MAC_SWITCH:
-                #a = i[0].replace(':','')
-                #b = a + str(i[1]) + str(i[2])
-                #c = int(b)
-                #lista_comparacao2.append(c)
                 lista_comparacao2.append(str(i[0])+str(i[1]))
-            #d = str(src).replace(':','')
-            #e = d + str(dpid) + str(porta_host)
-            #f = int(e)
             comp = str(src)+str(dpid)
             if comp not in lista_comparacao2:
                 TABELA_MAC_SWITCH.append([str(src),dpid,porta_host])
@@ -299,8 +295,8 @@ class MeuApp(app_manager.RyuApp):
                         #Verificando os dados Gravados no arquivo!!
                         #Somente para o Swtich onde esta os Servidores
                         if datapath.id == ID_SWITCH:
-                            #arq = open('/home/bruno/ryu/Bruno/Dados_QoS_Servidor.txt','r')
-                            arq = open('/home/administrador/ryu/Bruno/Dados_QoS_Servidor.txt','r')
+                            arq = open('/home/bruno/ryu/Bruno/Dados_QoS_Servidor.txt','r')
+                            #arq = open('/home/administrador/ryu/Bruno/Dados_QoS_Servidor.txt','r')
                             texto = arq.read()
 
 
@@ -312,6 +308,35 @@ class MeuApp(app_manager.RyuApp):
                             '''
                             Montagem das regras
                             '''
+                            grafo = nx.MultiGraph()
+                            #Obtem os switches
+                            switch_list = get_switch(self.topology_api_app, None)
+                            TABELA_SWITCH=[switch.dp.id for switch in switch_list]
+                            print(TABELA_SWITCH)
+
+                            #Obtencao dos links 'Ida e Volta'
+                            links_list = get_link(self.topology_api_app, None)
+                            links=[(link.src.dpid,link.dst.dpid,{'port':link.src.port_no}) for link in links_list]
+                            links=[(link.dst.dpid,link.src.dpid,{'port':link.dst.port_no}) for link in links_list]
+                            #Monta o grafo para calcular a rota entre Server e Client
+                            index = 0
+                            for i in links:
+                                grafo.add_edge(i[0],i[1],cost=1,index=index)
+                                index = index +1
+                            #print(nx.dijkstra_path(grafo,3,1,weight='cost'))
+                            index = 0
+                            ip = ''
+                            for i in TABLE_MAC_SWITCH:
+                                for j in TABELA_IP_SWITCH:
+                                    if j[1] == i[0]:
+                                        ip = j[0]
+                                        break
+                                grafo.add_edge(ip,i[1],cost=1,index=index)
+                            print('******************PATH************************')
+                            print(nx.dijkstra_path(grafo,'10.0.0.1','10.0.0.3',weight='cost'))
+                            #Fim Montagem grafo
+
+
 
 
 
@@ -495,9 +520,6 @@ class MeuApp(app_manager.RyuApp):
         print('-------------------------')
         #print "**********List of links"
         #print self.net.edges()
-
-        #Tabela de Switch recebe os Switches que existem
-        TABELA_SWITCH = switches
     '''
     Fim Monta topologia
     '''
