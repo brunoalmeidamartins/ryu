@@ -19,7 +19,7 @@ from ryu.lib.mac import haddr_to_bin
 #Topologia
 from ryu.topology import event, switches
 from ryu.topology.api import get_switch, get_link
-#import networkx as nx
+import networkx as nx
 #Sistema
 import os
 import requests
@@ -232,14 +232,16 @@ class MeuApp(app_manager.RyuApp):
                 print('------------------')
             lista_comparacao2 = []
             for i in TABELA_MAC_SWITCH:
-                a = i[0].replace(':','')
-                b = a + str(i[1]) + str(i[2])
-                c = int(b)
-                lista_comparacao2.append(c)
-            d = str(src).replace(':','')
-            e = d + str(dpid) + str(porta_host)
-            f = int(e)
-            if f not in lista_comparacao2:
+                #a = i[0].replace(':','')
+                #b = a + str(i[1]) + str(i[2])
+                #c = int(b)
+                #lista_comparacao2.append(c)
+                lista_comparacao2.append(str(i[0])+str(i[1]))
+            #d = str(src).replace(':','')
+            #e = d + str(dpid) + str(porta_host)
+            #f = int(e)
+            comp = str(src)+str(dpid)
+            if comp not in lista_comparacao2:
                 TABELA_MAC_SWITCH.append([str(src),dpid,porta_host])
                 print('------------------')
                 print('Tabela de mapeamento switch->Saida')
@@ -297,7 +299,8 @@ class MeuApp(app_manager.RyuApp):
                         #Verificando os dados Gravados no arquivo!!
                         #Somente para o Swtich onde esta os Servidores
                         if datapath.id == ID_SWITCH:
-                            arq = open('/home/bruno/ryu/Bruno/Dados_QoS_Servidor.txt','r')
+                            #arq = open('/home/bruno/ryu/Bruno/Dados_QoS_Servidor.txt','r')
+                            arq = open('/home/administrador/ryu/Bruno/Dados_QoS_Servidor.txt','r')
                             texto = arq.read()
 
 
@@ -305,6 +308,17 @@ class MeuApp(app_manager.RyuApp):
                             print(texto)
                             arq.close()
                             print('-----------------------')
+
+                            '''
+                            Montagem das regras
+                            '''
+
+
+
+
+
+
+
 
                             '''
                             print('-----------------------------')
@@ -475,9 +489,9 @@ class MeuApp(app_manager.RyuApp):
         print('**************Links****************')
         print(links)
         print('-------------------------')
-        print('**************Links_list_teste****************')
-        for i in links_list:
-            print(i)
+        #print('**************Links_list_teste****************')
+        #for i in links_list:
+            #print(i)
         print('-------------------------')
         #print "**********List of links"
         #print self.net.edges()
