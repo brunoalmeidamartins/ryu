@@ -349,7 +349,43 @@ class MeuApp(app_manager.RyuApp):
                             print('***************Path Client->Server***********************')
                             print(nx.dijkstra_path(grafo,ip_client,ip_server,weight='cost'))
                             path_client_server = nx.dijkstra_path(grafo,ip_client,ip_server,weight='cost')
-                            
+
+                            #Regras
+                            mac_server = ''
+                            mac_client = ''
+                            for i in TABELA_IP_SWITCH:
+                                if i[0] == ip_client:
+                                    mac_client = i[1]
+                                if i[0] == ip_server:
+                                    mac_server = i[1]
+                            print('mac_cliente: '+mac_client)
+                            print('mac_server: '+mac_server)
+                            #Aplica QoS nas portas
+                            qos = os.popen("ovs-vsctl list qos | grep _uuid | awk '{print $3}'").read().strip('\n')
+                            #Excluo a primeira posicao e a ultima, pois sao os IPs
+                            for i in range(1,len(path_server_client)-1):
+                                switch_caminho = path_server_client[i]
+                                porta_switch = ''
+                                for j in TABELA_MAC_SWITCH:
+                                    if j[1] == switch_caminho:
+                                        porta_switch = j[2]
+                                        break
+                                os.system('ovs-vsctl set port s'+str(switch_caminho)+'-eth'+str(porta_switch)+' qos='+str(qos))
+                                print('ovs-vsctl set port s'+str(switch_caminho)+'-eth'+str(porta_switch)+' qos='+str(qos))
+
+                                #os.system('ovs-vsctl set port r%d-eth%d qos=%s' %(dpid,prt,qos))
+
+                            #Aplica a regra de saida QoS
+                            for i in range(1,len(path_server_client)-1):
+                                switch_caminho = path_server_client[i]
+                                porta_switch = ''
+                                for j in TABELA_MAC_SWITCH:
+                                    if j[1] == switch_caminho:
+                                        porta_switch = j[2]
+                                        break
+                                os.system('ovs-ofctl add-flow s' + str(switch_caminho) + ' priority=40000,dl_type=0x0800,nw_dst='+str(ip_client)+',nw_proto=17,tp_dst='+str(porta_envio)+',actions=enqueue:'+str(porta_switch)+':1')
+                                print('ovs-ofctl add-flow s' + str(switch_caminho) + ' priority=40000,dl_type=0x0800,nw_dst='+str(ip_client)+',nw_proto=17,tp_dst='+str(porta_envio)+',actions=enqueue:'+str(porta_switch)+':1')
+                                #enqueue:1:1 = enqueue:porta:queue
 
 
 
@@ -546,3 +582,4 @@ app_manager.require_app('ryu.app.ofctl_rest')
 app_manager.require_app('ryu.app.simple_switch_13_mod')
 app_manager.require_app('ryu.app.rest_conf_switch')
 app_manager.require_app('ryu.app.rest_topology')
+#app_manager.require_app('ryu.app.rest_qos_mod')
