@@ -298,11 +298,19 @@ class MeuApp(app_manager.RyuApp):
                             arq = open('/home/bruno/ryu/Bruno/Dados_QoS_Servidor.txt','r')
                             #arq = open('/home/administrador/ryu/Bruno/Dados_QoS_Servidor.txt','r')
                             texto = arq.read()
-
-
                             print('-----------------------')
-                            print(texto)
+                            #print(texto)
+                            #'10.0.0.2'/25000/video
                             arq.close()
+                            texto1 = texto.split('/')
+                            ip_client = texto1[0]
+                            porta_envio = texto1[1]
+                            servico_fornecido = texto1[2]
+                            ip_server = pkt_ipv4.src
+                            print("Ip Client: "+ip_client)
+                            print("Ip Server: "+ip_server)
+                            print("Porta Envio: "+porta_envio)
+                            print("Servico: "+servico_fornecido)
                             print('-----------------------')
 
                             '''
@@ -312,7 +320,7 @@ class MeuApp(app_manager.RyuApp):
                             #Obtem os switches
                             switch_list = get_switch(self.topology_api_app, None)
                             TABELA_SWITCH=[switch.dp.id for switch in switch_list]
-                            print(TABELA_SWITCH)
+                            #print(TABELA_SWITCH)
 
                             #Obtencao dos links 'Ida e Volta'
                             links_list = get_link(self.topology_api_app, None)
@@ -332,9 +340,16 @@ class MeuApp(app_manager.RyuApp):
                                         ip = j[0]
                                         break
                                 grafo.add_edge(ip,i[1],cost=1,index=index)
-                            print('******************PATH************************')
-                            print(nx.dijkstra_path(grafo,'10.0.0.1','10.0.0.3',weight='cost'))
+                            #print('******************PATH************************')
+                            #print(nx.dijkstra_path(grafo,'10.0.0.1','10.0.0.3',weight='cost'))
                             #Fim Montagem grafo
+                            print('***************Path Server->Client**********************')
+                            print(nx.dijkstra_path(grafo,ip_server,ip_client,weight='cost'))
+                            path_server_client = nx.dijkstra_path(grafo,ip_server,ip_client,weight='cost')
+                            print('***************Path Client->Server***********************')
+                            print(nx.dijkstra_path(grafo,ip_client,ip_server,weight='cost'))
+                            path_client_server = nx.dijkstra_path(grafo,ip_client,ip_server,weight='cost')
+                            
 
 
 
