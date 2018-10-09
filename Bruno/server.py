@@ -55,7 +55,7 @@ while True:
 		#Salvo um arquivo com os dados!!
 		arq = open('/home/bruno/ryu/Bruno/Dados_QoS_Servidor.txt','w')
 		#Formato a ser guardado = IP/Porta/Servico
-		p = str(addr[0])+'/'+recv[1]+'/'+recv[0]
+		p = str(addr[0])+'/'+str(addr[1])+'/'+recv[0]
 		print(p)
 		arq.write(str(addr[0])+'/'+recv[1]+'/'+recv[0])
 		arq.close()
