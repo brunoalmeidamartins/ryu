@@ -23,6 +23,8 @@ import networkx as nx
 #Sistema
 import os
 import requests
+import pickle
+from classe import Classe
 
 '''
 Itens copiado do l3-qos-> Alexandre
@@ -55,6 +57,9 @@ TABLE_MAC_SWITCH = []
 #Tabelas
 TABELA_IP_SWITCH = [] #Mapea a saida do IP para cada switch
 TABELA_MAC_SWITCH = [] #Mapea a saida de MAC para cada switch
+
+#Arquivos
+filename = '/home/bruno/ryu/Bruno/classes.conf'	#Arquivo de lista de objetos Classe
 
 class MeuApp(app_manager.RyuApp):
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
@@ -174,8 +179,8 @@ class MeuApp(app_manager.RyuApp):
         Fim area de testes
         '''
         #print(mod)
-        print('------------------------------------------')
-        print(' ')
+        #print('------------------------------------------')
+        #print(' ')
     '''
     Area do Packet_In
     '''
@@ -227,22 +232,22 @@ class MeuApp(app_manager.RyuApp):
             if str(src) not in lista_comparacao:
                 TABLE_MAC_SWITCH.append([str(src),dpid,porta_host]) #Preenche a tabela de MAC
                 TABELA_IP_SWITCH.append([str(src_ip),str(src)]) #Preenche a tabela de IPs->MAC
-                print('------------------')
-                print('Tabela onde esta o HOST')
-                print(TABLE_MAC_SWITCH)
-                print('IP HOST -> MAC HOST')
-                print(TABELA_IP_SWITCH)
-                print('------------------')
+                #print('------------------')
+                #print('Tabela onde esta o HOST')
+                #print(TABLE_MAC_SWITCH)
+                #print('IP HOST -> MAC HOST')
+                #print(TABELA_IP_SWITCH)
+                #print('------------------')
             lista_comparacao2 = []
             for i in TABELA_MAC_SWITCH:
                 lista_comparacao2.append(str(i[0])+str(i[1]))
             comp = str(src)+str(dpid)
             if comp not in lista_comparacao2:
                 TABELA_MAC_SWITCH.append([str(src),dpid,porta_host])
-                print('------------------')
-                print('Tabela de mapeamento switch->Saida')
-                print(TABELA_MAC_SWITCH)
-                print('------------------')
+                #print('------------------')
+                #print('Tabela de mapeamento switch->Saida')
+                #print(TABELA_MAC_SWITCH)
+                #print('------------------')
 
 
 
@@ -298,7 +303,7 @@ class MeuApp(app_manager.RyuApp):
                             arq = open('/home/bruno/ryu/Bruno/Dados_QoS_Servidor.txt','r')
                             #arq = open('/home/administrador/ryu/Bruno/Dados_QoS_Servidor.txt','r')
                             texto = arq.read()
-                            print('-----------------------')
+                            #print('-----------------------')
                             #print(texto)
                             #'10.0.0.2'/25000/video
                             arq.close()
@@ -307,11 +312,11 @@ class MeuApp(app_manager.RyuApp):
                             porta_envio = texto1[1]
                             servico_fornecido = texto1[2]
                             ip_server = pkt_ipv4.src
-                            print("Ip Client: "+ip_client)
-                            print("Ip Server: "+ip_server)
-                            print("Porta Envio: "+porta_envio)
-                            print("Servico: "+servico_fornecido)
-                            print('-----------------------')
+                            #print("Ip Client: "+ip_client)
+                            #print("Ip Server: "+ip_server)
+                            #print("Porta Envio: "+porta_envio)
+                            #print("Servico: "+servico_fornecido)
+                            #print('-----------------------')
 
                             '''
                             Montagem das regras
@@ -371,9 +376,23 @@ class MeuApp(app_manager.RyuApp):
                                         porta_switch = j[2]
                                         break
                                 os.system('ovs-vsctl set port s'+str(switch_caminho)+'-eth'+str(porta_switch)+' qos='+str(qos))
-                                print('ovs-vsctl set port s'+str(switch_caminho)+'-eth'+str(porta_switch)+' qos='+str(qos))
+                                #print('ovs-vsctl set port s'+str(switch_caminho)+'-eth'+str(porta_switch)+' qos='+str(qos))
 
                                 #os.system('ovs-vsctl set port r%d-eth%d qos=%s' %(dpid,prt,qos))
+
+                            #Acha qual fila eh a QoS pedida
+                            #Carregamento da lista de objetos Classe
+                            classlist = []
+                            if os.path.isfile(filename):
+                            	filec = open(filename,'rb')
+                            	classlist = pickle.load(filec)
+                            	filec.close()
+                            fila_saida = '0' #Fila a ser aplicada
+                            for c in classlist:
+                                if c.nome == servico_fornecido:
+                                    fila_saida = c.id
+                            print('Fila saida: '+str(fila_saida))
+
 
                             #Aplica a regra de saida QoS
                             for i in range(1,len(path_server_client)-1):
@@ -383,9 +402,9 @@ class MeuApp(app_manager.RyuApp):
                                     if j[1] == switch_caminho:
                                         porta_switch = j[2]
                                         break
-                                os.system('ovs-ofctl add-flow s' + str(switch_caminho) + ' priority=40000,dl_type=0x0800,nw_dst='+str(ip_client)+',nw_proto=17,tp_dst='+str(porta_envio)+',actions=enqueue:'+str(porta_switch)+':1')
-                                print('ovs-ofctl add-flow s' + str(switch_caminho) + ' priority=40000,dl_type=0x0800,nw_dst='+str(ip_client)+',nw_proto=17,tp_dst='+str(porta_envio)+',actions=enqueue:'+str(porta_switch)+':1')
-                                #enqueue:1:1 = enqueue:porta:queue
+                                os.system('ovs-ofctl add-flow s' + str(switch_caminho) + ' priority=40000,dl_type=0x0800,nw_dst='+str(ip_client)+',nw_proto=17,idle_timeout=60,tp_dst='+str(porta_envio)+',actions=enqueue:'+str(porta_switch)+':'+str(fila_saida))
+                                print('ovs-ofctl add-flow s' + str(switch_caminho) + ' priority=40000,dl_type=0x0800,nw_dst='+str(ip_client)+',nw_proto=17,idle_timeout=60,tp_dst='+str(porta_envio)+',actions=enqueue:'+str(porta_switch)+':'+str(fila_saida))
+
 
 
 
@@ -439,8 +458,8 @@ class MeuApp(app_manager.RyuApp):
                 else:
                     print("UDP!! Nao eh a porta 1234")
                 #if pkt_udp.
-                print(" ")
-                print(" ")
+                #print(" ")
+                #print(" ")
                 #print(t)
 
             #return
@@ -504,7 +523,7 @@ class MeuApp(app_manager.RyuApp):
         instructions = []
         flow_mod = self.remove_table_flows(datapath, table_id,
                                         empty_match, instructions)
-        print "deleting all flow entries in table ", table_id
+        #print "deleting all flow entries in table ", table_id
         datapath.send_msg(flow_mod)
     def remove_table_flows(self, datapath, table_id, match, instructions):
         """Create OFP flow mod message to remove flows from table."""
@@ -559,16 +578,16 @@ class MeuApp(app_manager.RyuApp):
         #self.net.add_edges_from(links)
         links=[(link.dst.dpid,link.src.dpid,{'port':link.dst.port_no}) for link in links_list]
         #self.net.add_edges_from(links)
-        print('-------------------------')
-        print('**************Switches****************')
-        print(switches)
-        print('**************Links****************')
-        print(links)
-        print('-------------------------')
+        #print('-------------------------')
+        #print('**************Switches****************')
+        #print(switches)
+        #print('**************Links****************')
+        #print(links)
+        #print('-------------------------')
         #print('**************Links_list_teste****************')
         #for i in links_list:
             #print(i)
-        print('-------------------------')
+        #print('-------------------------')
         #print "**********List of links"
         #print self.net.edges()
     '''

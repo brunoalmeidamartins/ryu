@@ -50,6 +50,7 @@ while True:
 	print 'Mensagem recebida:',msg
 	if msg!='FIN':
 		conn.sendall('Recebida!')
+		#recv = msg.split('/')
 		recv = msg.split('/')
 		#Salvo um arquivo com os dados!!
 		arq = open('/home/bruno/ryu/Bruno/Dados_QoS_Servidor.txt','w')

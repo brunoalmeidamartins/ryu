@@ -34,6 +34,7 @@ while cond != 0:
 
 	#msg = raw_input('Informe o conteudo: ')
 	if cond == 2:
+		#msg = 'video/25000'
 		msg = 'video/25000'
 	else:
 		msg = 'FIN'
