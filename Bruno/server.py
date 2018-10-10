@@ -58,6 +58,7 @@ while True:
 		p = str(addr[0])+'/'+str(addr[1])+'/'+recv[0]
 		print(p)
 		arq.write(str(addr[0])+'/'+recv[1]+'/'+recv[0])
+		#arq.write(str(addr[0])+'/'+str(addr[1])+'/'+recv[0])
 		arq.close()
 
 		#Enviando um pacote ao servidor avisando sobre a atualizacao do arquivo
