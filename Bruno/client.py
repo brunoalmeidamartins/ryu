@@ -8,7 +8,7 @@ import time
 #from rsvpclient import Rsvpclient
 
 #host = sys.argv[1]			#Endereco do servidor remoto obtido atraves da CLI
-host = '10.0.0.3'			#Endereco do servidor remoto obtido atraves da CLI
+host = '10.0.0.7'			#Endereco do servidor remoto obtido atraves da CLI
 #port = int(sys.argv[2])		#Porta do servidor remoto obtida atraves da CLI
 port = 23000				#Porta do servidor remoto obtida atraves da CLI
 #filetest = 'test.mov'			#Arquivo de teste
@@ -38,6 +38,9 @@ while cond != 0:
 		msg = 'video'
 		msg = msg +'/25000'
 	else:
+		#Antes de Enviar a msg FIM abre o aguarda o vlc
+		time.sleep(60) #Aguarda o tempo
+		#Fim do aguardo do vlc
 		msg = 'FIN'
 		#begin=time.time()
 	sock.sendall(msg)

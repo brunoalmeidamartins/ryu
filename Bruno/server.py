@@ -57,8 +57,8 @@ while True:
 		#Formato a ser guardado = IP/Porta/Servico
 		p = str(addr[0])+'/'+str(addr[1])+'/'+recv[0]
 		print(p)
-		arq.write(str(addr[0])+'/'+recv[1]+'/'+recv[0])
-		#arq.write(str(addr[0])+'/'+str(addr[1])+'/'+recv[0])
+		#arq.write(str(addr[0])+'/'+recv[1]+'/'+recv[0])
+		arq.write(str(addr[0])+'/'+str(addr[1])+'/'+recv[0])
 		arq.close()
 
 		#Enviando um pacote ao servidor avisando sobre a atualizacao do arquivo
@@ -71,8 +71,15 @@ while True:
 		print(t)
 		#Fim do Envio
 
+		#Abre o VLC para iniciar o envio do video
+
+		os.system('(sleep 60;echo "quit") | vlc --intf rc /home/bruno/video_teste.mp4 --sout udp://'+str(addr[0])+':'+str(addr[1])+' &')
+
+		#Fim do Envio do Video
+
 
 	else:
+		print('vlc --intf rc /home/bruno/ryu/Bruno/video_teste.mp4 --sout udp://'+str(addr[0])+':'+str(addr[1])+' &')
 		print('Encerrando Conexao')
 		conn.sendall('FIN')
 		break
