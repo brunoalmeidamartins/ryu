@@ -14,6 +14,7 @@ def myNetwork():
 
     net = Mininet( topo=None,
                    build=False,
+                   autoSetMacs=True,
                    ipBase='10.0.0.0/8')
 
     info( '*** Adding controller\n' )
@@ -31,30 +32,33 @@ def myNetwork():
     s3 = net.addSwitch('s3', cls=OVSKernelSwitch)
 
     info( '*** Add hosts\n')
-    h4 = net.addHost('h4', cls=Host, ip='10.0.0.4', defaultRoute=None)
-    h2 = net.addHost('h2', cls=Host, ip='10.0.0.2', defaultRoute=None)
     h1 = net.addHost('h1', cls=Host, ip='10.0.0.1', defaultRoute=None)
-    srv1 = net.addHost('srv1', cls=Host, ip='10.0.0.8', defaultRoute=None)
+    h2 = net.addHost('h2', cls=Host, ip='10.0.0.2', defaultRoute=None)
     h3 = net.addHost('h3', cls=Host, ip='10.0.0.3', defaultRoute=None)
+    h4 = net.addHost('h4', cls=Host, ip='10.0.0.4', defaultRoute=None)
+    h5 = net.addHost('h5', cls=Host, ip='10.0.0.5', defaultRoute=None)
     h6 = net.addHost('h6', cls=Host, ip='10.0.0.6', defaultRoute=None)
     h7 = net.addHost('h7', cls=Host, ip='10.0.0.7', defaultRoute=None)
+    srv1 = net.addHost('srv1', cls=Host, ip='10.0.0.8', defaultRoute=None)
     srv2 = net.addHost('srv2', cls=Host, ip='10.0.0.9', defaultRoute=None)
-    h5 = net.addHost('h5', cls=Host, ip='10.0.0.5', defaultRoute=None)
+
 
     info( '*** Add links\n')
-    net.addLink(s5, h6)
-    net.addLink(s5, h7)
-    net.addLink(s1, h1)
-    net.addLink(s1, h2)
-    net.addLink(s1, h3)
-    net.addLink(s1, s2)
-    net.addLink(s2, s3)
-    net.addLink(s2, s4)
-    net.addLink(s2, s5)
-    net.addLink(s3, srv1)
-    net.addLink(s3, srv2)
-    net.addLink(s4, h4)
-    net.addLink(s4, h5)
+    net.addLink(h1, s1, 1, 1)
+    net.addLink(h2, s1, 1, 2)
+    net.addLink(h3, s1, 1, 3)
+    net.addLink(srv1, s3, 1, 1)
+    net.addLink(srv2, s3, 1, 2)
+    net.addLink(h4, s4, 1, 1)
+    net.addLink(h5, s4, 1, 2)
+    net.addLink(h6, s5, 1, 1)
+    net.addLink(h7, s5, 1, 2)
+    net.addLink(s1, s2, 5, 1)
+    net.addLink(s2, s3, 2, 5)
+    net.addLink(s2, s4, 3, 5)
+    net.addLink(s2, s5, 4, 5)
+
+
 
     info( '*** Starting network\n')
     net.build()
@@ -77,4 +81,3 @@ def myNetwork():
 if __name__ == '__main__':
     setLogLevel( 'info' )
     myNetwork()
-

@@ -406,8 +406,27 @@ class MeuApp(app_manager.RyuApp):
                                 os.system('ovs-ofctl add-flow s' + str(switch_caminho) + ' priority=40000,dl_type=0x0800,nw_dst='+str(ip_client)+',nw_proto=17,tp_dst='+str(porta_envio)+',actions=enqueue:'+str(porta_switch)+':'+str(fila_saida))
                                 print('ovs-ofctl add-flow s' + str(switch_caminho) + ' priority=40000,dl_type=0x0800,nw_dst='+str(ip_client)+',nw_proto=17,idle_timeout=60,tp_dst='+str(porta_envio)+',actions=enqueue:'+str(porta_switch)+':'+str(fila_saida))
 
+                                #Sem QoS -> Instala a regra pra jogar tudo para fila 0
+                                #Instala regras de Fila 0
+                                '''
+                                porta_switch = ' '
+                                for j in TABELA_MAC_SWITCH:
+                                    if j[1] == switch_caminho:
+
+                                for t in range(0,3):
+                                    os.system('ovs-ofctl add-flow s' + str(switch_caminho) + ' priority=40000,dl_type=0x0800,nw_dst=10.0.0.2,actions=enqueue:'+str(t+1)+':0') #h2
+                                    os.system('ovs-ofctl add-flow s' + str(switch_caminho) + ' priority=40000,dl_type=0x0800,nw_dst=10.0.0.3,actions=enqueue:'+str(t+1)+':0') #h3
 
 
+
+                                #Imprime TABELA_MAC_SWTICH:
+                                for y in TABLE_MAC_SWITCH:
+                                    print(y)
+                                print('FIM1')
+                                for y in TABELA_IP_SWITCH:
+                                    print(y)
+                                print("FIM2")
+                                '''
 
 
 

@@ -7,7 +7,7 @@ from classe import Classe
 import pickle
 
 filename='/home/bruno/pox/ext/classes.conf'		#Nome do arquivo de classes de servicos
-tx_max=100000000						#Vazao maxima da rede em bps
+tx_max=1000000						#Vazao maxima da rede em bps
 
 def persist(classlist):			#Persiste uma lista de objetos Classe no arquivo "filename"
 	file=open(filename,'wb')
