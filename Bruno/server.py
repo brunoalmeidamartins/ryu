@@ -55,10 +55,11 @@ while True:
 		#Salvo um arquivo com os dados!!
 		arq = open('/home/bruno/ryu/Bruno/Dados_QoS_Servidor.txt','w')
 		#Formato a ser guardado = IP/Porta/Servico
-		p = str(addr[0])+'/'+str(addr[1])+'/'+recv[0]
+		#p = str(addr[0])+'/'+str(addr[1])+'/'+recv[0] #Porta que abriu a coxexao com HOST
+		p = str(addr[0])+'/'+str(recv[1])+'/'+recv[0] #Porta que foi dita pelo host
 		print(p)
-		#arq.write(str(addr[0])+'/'+recv[1]+'/'+recv[0])
-		arq.write(str(addr[0])+'/'+str(addr[1])+'/'+recv[0])
+		arq.write(str(addr[0])+'/'+recv[1]+'/'+recv[0]) #Guarda a porta que foi enviada pelo host
+		#arq.write(str(addr[0])+'/'+str(addr[1])+'/'+recv[0]) #Guarda a porta que o socket abriu
 		arq.close()
 
 		#Enviando um pacote ao servidor avisando sobre a atualizacao do arquivo
@@ -73,13 +74,18 @@ while True:
 
 		#Abre o VLC para iniciar o envio do video
 
-		os.system('(sleep 60;echo "quit") | vlc --intf rc /home/bruno/video_teste.mp4 --sout udp://'+str(addr[0])+':'+str(addr[1])+' &')
+		#os.system('(sleep 140;echo "quit") | vlc --intf rc /home/bruno/teste_1080p.mp4 --sout udp://'+str(addr[0])+':'+str(recv[1])+' &') #Com QoS
+		os.system('(sleep 140;echo "quit") | vlc --intf rc /home/bruno/teste_1080p.mp4 --sout udp://'+str(addr[0])+':'+str(addr[1])+' &') #Sem QoS
+
+		time.sleep(141)
+		#os.system('(sleep 5;echo "stats";sleep 3;echo "shutdown") | telnet 10.0.0.1 '+str(recv[1])+' > /home/bruno/ryu/Bruno/StaticsVideo.txt')
 
 		#Fim do Envio do Video
 
 
 	else:
-		print('vlc --intf rc /home/bruno/ryu/Bruno/video_teste.mp4 --sout udp://'+str(addr[0])+':'+str(addr[1])+' &')
+		#print('vlc --intf rc /home/bruno/ryu/Bruno/video_teste.mp4 --sout udp://'+str(addr[0])+':'+str(addr[1])+' &')
+		print('vlc -vvv /home/bruno/teste_1080p.mp4 --sout udp://'+str(addr[0])+':'+str(recv[1])+' vlc://quit &')
 		print('Encerrando Conexao')
 		conn.sendall('FIN')
 		break

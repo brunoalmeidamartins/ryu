@@ -10,7 +10,11 @@ from mininet.log import setLogLevel, info
 from mininet.link import TCLink, Intf
 from subprocess import call
 
-def myNetwork():
+import os
+import time
+import subprocess
+
+def myNetwork(i):
 
     net = Mininet( topo=None,
                    build=False,
@@ -42,19 +46,22 @@ def myNetwork():
     h5 = net.addHost('h5', cls=Host, ip='10.0.0.5', defaultRoute=None)
 
     info( '*** Add links\n')
-    net.addLink(s5, h6)
-    net.addLink(s5, h7)
+
     net.addLink(s1, h1)
     net.addLink(s1, h2)
     net.addLink(s1, h3)
-    net.addLink(s1, s2)
-    net.addLink(s2, s3)
-    net.addLink(s2, s4)
-    net.addLink(s2, s5)
     net.addLink(s3, srv1)
     net.addLink(s3, srv2)
     net.addLink(s4, h4)
     net.addLink(s4, h5)
+    net.addLink(s5, h6)
+    net.addLink(s5, h7)
+    net.addLink(s1, s2)
+    net.addLink(s2, s3)
+    net.addLink(s2, s4)
+    net.addLink(s2, s5)
+
+
 
     info( '*** Starting network\n')
     net.build()
@@ -70,11 +77,30 @@ def myNetwork():
     net.get('s3').start([c0])
 
     info( '*** Post configure switches and hosts\n')
+    #Comandos a serem executados
+    os.system('python /home/bruno/ryu/Bruno/Resultados/dados_ovs.py '+str(i+1)+' &')
+    os.system('python /home/bruno/ryu/Bruno/admin.py &')
+    h2.cmd('iperf -s -u &')
+    h3.cmd('iperf -s -u &')
+    srv2.cmd('iperf -c 10.0.0.2 -u -t 205 -i 1 -b 19m &')
+    srv2.cmd('iperf -c 10.0.0.3 -u -t 205 -i 1 -b 19m &')
+    time.sleep(29)
+    srv1.cmd('python /home/bruno/ryu/Bruno/server.py &')
+    time.sleep(1)
+    h1.cmd('python /home/bruno/ryu/Bruno/client.py &')
+    time.sleep(1)
+    print('Rodada: '+str(i+1))
+    for r in range(32,215):
+        if r%10 == 0:
+            print('Tempo: '+str(r)+' Rodada: '+str(i+1))
+        time.sleep(1)
 
-    CLI(net)
+    #CLI(net)
+    info('*** Fim...Aguardando os 30 segundos!!!')
     net.stop()
 
 if __name__ == '__main__':
     setLogLevel( 'info' )
-    myNetwork()
-
+    for i in range(0,1):
+        myNetwork(i)
+        time.sleep(30)

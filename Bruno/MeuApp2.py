@@ -402,8 +402,7 @@ class MeuApp(app_manager.RyuApp):
                                     if j[1] == switch_caminho:
                                         porta_switch = j[2]
                                         break
-                                #Sem QoS -> Regra do QoS sem Tempo para limitar a rede
-                                os.system('ovs-ofctl add-flow s' + str(switch_caminho) + ' priority=40000,dl_type=0x0800,nw_dst='+str(ip_client)+',nw_proto=17,tp_dst='+str(porta_envio)+',actions=enqueue:'+str(porta_switch)+':'+str(fila_saida))
+                                os.system('ovs-ofctl add-flow s' + str(switch_caminho) + ' priority=40000,dl_type=0x0800,nw_dst='+str(ip_client)+',nw_proto=17,idle_timeout=60,tp_dst='+str(porta_envio)+',actions=enqueue:'+str(porta_switch)+':'+str(fila_saida))
                                 print('ovs-ofctl add-flow s' + str(switch_caminho) + ' priority=40000,dl_type=0x0800,nw_dst='+str(ip_client)+',nw_proto=17,idle_timeout=60,tp_dst='+str(porta_envio)+',actions=enqueue:'+str(porta_switch)+':'+str(fila_saida))
 
 
@@ -457,8 +456,7 @@ class MeuApp(app_manager.RyuApp):
 
 
                 else:
-                    #print("UDP!! Nao eh a porta 1234")
-                    pass
+                    print("UDP!! Nao eh a porta 1234")
                 #if pkt_udp.
                 #print(" ")
                 #print(" ")

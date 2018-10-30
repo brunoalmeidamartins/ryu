@@ -1,0 +1,30 @@
+Trying 10.0.0.1...
+Connected to 10.0.0.1.
+Escape character is '^]'.
+VLC media player 2.2.2 Weatherwax
+Command Line Interface initialized. Type `help' for help.
+> +----[ begin of statistical info
++-[Incoming]
+| input bytes read :   400770 KiB
+| input bitrate    :     1159 kb/s
+| demux bytes read :   388648 KiB
+| demux bitrate    :     1094 kb/s
+| demux corrupted  :        0
+| discontinuities  :        0
+|
++-[Video Decoding]
+| video decoded    :     8054
+| frames displayed :        0
+| frames lost      :     1612
+|
++-[Audio Decoding]
+| audio decoded    :    14605
+| buffers played   :    14573
+| buffers lost     :       40
+|
++-[Streaming]
+| packets sent     :        0
+| bytes sent       :        0 KiB
+| sending bitrate  :        0 kb/s
++----[ end of statistical info ]
+> 

@@ -8,7 +8,7 @@ import time
 #from rsvpclient import Rsvpclient
 
 #host = sys.argv[1]			#Endereco do servidor remoto obtido atraves da CLI
-host = '10.0.0.7'			#Endereco do servidor remoto obtido atraves da CLI
+host = '10.0.0.8'			#Endereco do servidor remoto obtido atraves da CLI
 #port = int(sys.argv[2])		#Porta do servidor remoto obtida atraves da CLI
 port = 23000				#Porta do servidor remoto obtida atraves da CLI
 #filetest = 'test.mov'			#Arquivo de teste
@@ -34,12 +34,15 @@ while cond != 0:
 
 	#msg = raw_input('Informe o conteudo: ')
 	if cond == 2:
+		porta_servico = '25000'
 		#msg = 'video/25000'
 		msg = 'video'
-		msg = msg +'/25000'
+		msg = msg +'/'+porta_servico
 	else:
 		#Antes de Enviar a msg FIM abre o aguarda o vlc
-		time.sleep(60) #Aguarda o tempo
+		#os.system('vlc -I rc --rc-host 10.0.0.1:'+porta_servico+' udp://@10.0.0.1:'+porta_servico+' &')
+		#print("Recebendo Video!!!")
+		time.sleep(140) #Aguarda o tempo do video 2:20 ou 140
 		#Fim do aguardo do vlc
 		msg = 'FIN'
 		#begin=time.time()
