@@ -6,7 +6,9 @@ import os
 from classe import Classe
 import pickle
 
-filename='/home/bruno/pox/ext/classes.conf'		#Nome do arquivo de classes de servicos
+path_home = os.getenv("HOME") #Captura o caminho da pasta HOME
+
+filename=path_home+'/ryu/Bruno/classes.conf'		#Nome do arquivo de classes de servicos
 tx_max=1000000000					#Vazao maxima da rede em bps
 
 def persist(classlist):			#Persiste uma lista de objetos Classe no arquivo "filename"

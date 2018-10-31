@@ -8,6 +8,7 @@ from mininet.node import IVSSwitch
 from mininet.cli import CLI
 from mininet.log import setLogLevel, info
 from mininet.link import TCLink, Intf
+from mininet.util import dumpNodeConnections
 from subprocess import call
 
 import os
@@ -16,7 +17,7 @@ import subprocess
 
 path_home = os.getenv("HOME") #Captura o caminho da pasta HOME
 
-def myNetwork():
+def myNetwork(i):
 
     net = Mininet( topo=None,
                    build=False,
@@ -95,19 +96,25 @@ def myNetwork():
 
     info( '*** Post configure switches and hosts\n')
     dumpNodeConnections(net.hosts)
+
     #Instala as filas de QoS
+    os.system('python '+path_home+'/ryu/Bruno/plotagem.py &')
     os.system('python '+path_home+'/ryu/Bruno/admin.py &')
-    #Comandos a serem executados
-    os.system('python '+path_home+'/ryu/Bruno/Resultados/dados_ovs.py '+str(i+1)+' &')
-    os.system('python '+path_home+'/ryu/Bruno/admin.py &')
+    os.system('python '+path_home+'/ryu/Bruno/Resultados/dados_ovs.py '+str(i+1)+' 1 &') # 1 = Iperf
+    net.pingAll() #Pinga todos os hosts
+    srv1.cmd('python '+path_home+'/ryu/Bruno/EnviaPacoteUDP_Server.py &') #Envia pacote para instalar a regras de QoS
     h2.cmd('iperf -s -u &')
     h3.cmd('iperf -s -u &')
-    srv2.cmd('iperf -c 10.0.0.2 -u -t 205 -i 1 -b 19m &')
-    srv2.cmd('iperf -c 10.0.0.3 -u -t 205 -i 1 -b 19m &')
+    print('Iperf 1 Iniciado!!!')
+    srv2.cmd('iperf -c 10.0.0.2 -u -t 500 -i 1 -b 20m &')
+    #print('Iperf 2 Iniciado!!!')
+    #srv2.cmd('iperf -c 10.0.0.3 -u -t 205 -i 1 -b 19m &')
     time.sleep(29)
-    srv1.cmd(''python '+path_home+'/ryu/Bruno/server.py &')
+    print('Iniciando Server!!')
+    srv1.cmd('python '+path_home+'/ryu/Bruno/server.py &')
     time.sleep(1)
-    h1.cmd(''python '+path_home+'/ryu/Bruno/client.py &')
+    print('Iniciando Client!!')
+    h1.cmd('python '+path_home+'/ryu/Bruno/client.py &')
     time.sleep(1)
     print('Rodada: '+str(i+1))
     for r in range(32,215):

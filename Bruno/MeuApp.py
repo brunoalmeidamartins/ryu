@@ -29,6 +29,8 @@ from classe import Classe
 '''
 Itens copiado do l3-qos-> Alexandre
 '''
+path_home = os.getenv("HOME") #Captura o caminho da pasta HOME
+
 ##### Porta do servidor
 SERVER_PORT = 23000
 
@@ -59,7 +61,7 @@ TABELA_IP_SWITCH = [] #Mapea a saida do IP para cada switch
 TABELA_MAC_SWITCH = [] #Mapea a saida de MAC para cada switch
 
 #Arquivos
-filename = '/home/bruno/ryu/Bruno/classes.conf'	#Arquivo de lista de objetos Classe
+filename = path_home+'/ryu/Bruno/classes.conf'	#Arquivo de lista de objetos Classe
 
 class MeuApp(app_manager.RyuApp):
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
@@ -402,11 +404,11 @@ class MeuApp(app_manager.RyuApp):
                                     if j[1] == switch_caminho:
                                         porta_switch = j[2]
                                         break
+                                #os.system('ovs-ofctl add-flow s' + str(switch_caminho) + ' priority=40000,dl_type=0x0800,nw_dst='+str(ip_client)+',nw_proto=17,tp_dst='+str(porta_envio)+',actions=enqueue:'+str(porta_switch)+':'+str(fila_saida))
+                                #print('ovs-ofctl add-flow s' + str(switch_caminho) + ' priority=40000,dl_type=0x0800,nw_dst='+str(ip_client)+',nw_proto=17,tp_dst='+str(porta_envio)+',actions=enqueue:'+str(porta_switch)+':'+str(fila_saida))
+                                #Teste tempo
                                 os.system('ovs-ofctl add-flow s' + str(switch_caminho) + ' priority=40000,dl_type=0x0800,nw_dst='+str(ip_client)+',nw_proto=17,tp_dst='+str(porta_envio)+',actions=enqueue:'+str(porta_switch)+':'+str(fila_saida))
                                 print('ovs-ofctl add-flow s' + str(switch_caminho) + ' priority=40000,dl_type=0x0800,nw_dst='+str(ip_client)+',nw_proto=17,tp_dst='+str(porta_envio)+',actions=enqueue:'+str(porta_switch)+':'+str(fila_saida))
-                                #Teste tempo
-                                #os.system('ovs-ofctl add-flow s' + str(switch_caminho) + ' priority=40000,dl_type=0x0800,nw_dst='+str(ip_client)+',nw_proto=17,idle_timeout=5,tp_dst='+str(porta_envio)+',actions=enqueue:'+str(porta_switch)+':'+str(fila_saida))
-                                #print('ovs-ofctl add-flow s' + str(switch_caminho) + ' priority=40000,dl_type=0x0800,nw_dst='+str(ip_client)+',nw_proto=17,idle_timeout=5,tp_dst='+str(porta_envio)+',actions=enqueue:'+str(porta_switch)+':'+str(fila_saida))
 
 
 

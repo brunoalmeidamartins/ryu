@@ -6,6 +6,9 @@
 import commands
 import time
 import sys
+import os
+
+path_home = os.getenv("HOME") #Captura o caminho da pasta HOME
 
 i=0
 tempo=205
@@ -64,7 +67,12 @@ while i<tempo:
 
     #tx3_aux = tx3
     #tx4_aux = tx4
-arq = open('/home/bruno/ryu/Bruno/Resultados/Cenario1/SemIperf/teste'+sys.argv[1]+'.txt', 'w')
+if sys.argv[2] == '0':
+    arq = open(path_home+'/ryu/Bruno/Resultados/Cenario1/SemIperf/teste'+sys.argv[1]+'.txt', 'w')
+elif sys.argv[2] == '1':
+    arq = open(path_home+'/ryu/Bruno/Resultados/Cenario1/1Iperf/teste'+sys.argv[1]+'.txt', 'w')
+else:
+    arq = open(path_home+'/ryu/Bruno/Resultados/Cenario1/2Iperf/teste'+sys.argv[1]+'.txt', 'w')
 arq.writelines(lista)
 arq.close()
 '''
