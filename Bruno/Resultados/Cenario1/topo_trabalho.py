@@ -8,6 +8,7 @@ from mininet.node import IVSSwitch
 from mininet.cli import CLI
 from mininet.log import setLogLevel, info
 from mininet.link import TCLink, Intf
+from mininet.util import dumpNodeConnections
 from subprocess import call
 
 import os
@@ -97,30 +98,9 @@ def myNetwork():
     dumpNodeConnections(net.hosts)
     #Instala as filas de QoS
     os.system('python '+path_home+'/ryu/Bruno/admin.py &')
-    #Comandos a serem executados
-    os.system('python '+path_home+'/ryu/Bruno/Resultados/dados_ovs.py '+str(i+1)+' &')
-    os.system('python '+path_home+'/ryu/Bruno/admin.py &')
-    h2.cmd('iperf -s -u &')
-    h3.cmd('iperf -s -u &')
-    srv2.cmd('iperf -c 10.0.0.2 -u -t 205 -i 1 -b 19m &')
-    srv2.cmd('iperf -c 10.0.0.3 -u -t 205 -i 1 -b 19m &')
-    time.sleep(29)
-    srv1.cmd(''python '+path_home+'/ryu/Bruno/server.py &')
-    time.sleep(1)
-    h1.cmd(''python '+path_home+'/ryu/Bruno/client.py &')
-    time.sleep(1)
-    print('Rodada: '+str(i+1))
-    for r in range(32,215):
-        if r%10 == 0:
-            print('Tempo: '+str(r)+' Rodada: '+str(i+1))
-        time.sleep(1)
-
-    #CLI(net)
-    info('*** Fim...Aguardando os 30 segundos!!!')
+    CLI(net)
     net.stop()
 
 if __name__ == '__main__':
     setLogLevel( 'info' )
-    for i in range(0,1):
-        myNetwork(i)
-        time.sleep(30)
+    myNetwork()

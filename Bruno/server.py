@@ -74,8 +74,8 @@ while True:
 
 		#Abre o VLC para iniciar o envio do video
 
-		os.system('(sleep 140;echo "quit") | vlc --intf rc /home/bruno/teste_1080p.mp4 --sout udp://'+str(addr[0])+':'+str(recv[1])+' &') #Com QoS
-		#os.system('(sleep 140;echo "quit") | vlc --intf rc /home/bruno/teste_1080p.mp4 --sout udp://'+str(addr[0])+':'+str(addr[1])+' &') #Sem QoS
+		#os.system('(sleep 140;echo "quit") | vlc --intf rc /home/bruno/teste_1080p.mp4 --sout udp://'+str(addr[0])+':'+str(recv[1])+' &') #Com QoS
+		os.system('(sleep 140;echo "quit") | vlc --intf rc /home/bruno/teste_1080p.mp4 --sout udp://'+str(addr[0])+':'+str(addr[1])+' &') #Sem QoS
 
 		time.sleep(141)
 		#os.system('(sleep 5;echo "stats";sleep 3;echo "shutdown") | telnet 10.0.0.1 '+str(recv[1])+' > /home/bruno/ryu/Bruno/StaticsVideo.txt')

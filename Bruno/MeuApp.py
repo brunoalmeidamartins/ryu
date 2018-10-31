@@ -402,11 +402,11 @@ class MeuApp(app_manager.RyuApp):
                                     if j[1] == switch_caminho:
                                         porta_switch = j[2]
                                         break
-                                #os.system('ovs-ofctl add-flow s' + str(switch_caminho) + ' priority=40000,dl_type=0x0800,nw_dst='+str(ip_client)+',nw_proto=17,idle_timeout=60,tp_dst='+str(porta_envio)+',actions=enqueue:'+str(porta_switch)+':'+str(fila_saida))
-                                #print('ovs-ofctl add-flow s' + str(switch_caminho) + ' priority=40000,dl_type=0x0800,nw_dst='+str(ip_client)+',nw_proto=17,idle_timeout=60,tp_dst='+str(porta_envio)+',actions=enqueue:'+str(porta_switch)+':'+str(fila_saida))
+                                os.system('ovs-ofctl add-flow s' + str(switch_caminho) + ' priority=40000,dl_type=0x0800,nw_dst='+str(ip_client)+',nw_proto=17,tp_dst='+str(porta_envio)+',actions=enqueue:'+str(porta_switch)+':'+str(fila_saida))
+                                print('ovs-ofctl add-flow s' + str(switch_caminho) + ' priority=40000,dl_type=0x0800,nw_dst='+str(ip_client)+',nw_proto=17,tp_dst='+str(porta_envio)+',actions=enqueue:'+str(porta_switch)+':'+str(fila_saida))
                                 #Teste tempo
-                                os.system('ovs-ofctl add-flow s' + str(switch_caminho) + ' priority=40000,dl_type=0x0800,nw_dst='+str(ip_client)+',nw_proto=17,idle_timeout=5,tp_dst='+str(porta_envio)+',actions=enqueue:'+str(porta_switch)+':'+str(fila_saida))
-                                print('ovs-ofctl add-flow s' + str(switch_caminho) + ' priority=40000,dl_type=0x0800,nw_dst='+str(ip_client)+',nw_proto=17,idle_timeout=5,tp_dst='+str(porta_envio)+',actions=enqueue:'+str(porta_switch)+':'+str(fila_saida))
+                                #os.system('ovs-ofctl add-flow s' + str(switch_caminho) + ' priority=40000,dl_type=0x0800,nw_dst='+str(ip_client)+',nw_proto=17,idle_timeout=5,tp_dst='+str(porta_envio)+',actions=enqueue:'+str(porta_switch)+':'+str(fila_saida))
+                                #print('ovs-ofctl add-flow s' + str(switch_caminho) + ' priority=40000,dl_type=0x0800,nw_dst='+str(ip_client)+',nw_proto=17,idle_timeout=5,tp_dst='+str(porta_envio)+',actions=enqueue:'+str(porta_switch)+':'+str(fila_saida))
 
 
 
