@@ -100,22 +100,21 @@ def myNetwork(i):
     #Instala as filas de QoS
     os.system('python '+path_home+'/ryu/Bruno/plotagem.py &')
     os.system('python '+path_home+'/ryu/Bruno/admin.py &')
-    os.system('python '+path_home+'/ryu/Bruno/Resultados/dados_ovs.py '+str(i+1)+' 2 &') # 2 = 2 Iperf
+    os.system('python '+path_home+'/ryu/Bruno/Resultados/dados_ovs.py '+str(i+1)+' 1 &') # 1 = Iperf
     net.pingAll() #Pinga todos os hosts
     srv1.cmd('python '+path_home+'/ryu/Bruno/EnviaPacoteUDP_Server.py &') #Envia pacote para instalar a regras de QoS
     h2.cmd('iperf -s -u &')
     h3.cmd('iperf -s -u &')
-
     print('Iperf 1 Iniciado!!!')
     srv2.cmd('iperf -c 10.0.0.2 -u -t 500 -i 1 -b 20m &')
-    print('Iperf 2 Iniciado!!!')
-    srv2.cmd('iperf -c 10.0.0.3 -u -t 500 -i 1 -b 20m &')
+    #print('Iperf 2 Iniciado!!!')
+    #srv2.cmd('iperf -c 10.0.0.3 -u -t 205 -i 1 -b 19m &')
     time.sleep(29)
     print('Iniciando Server!!')
-    srv1.cmd('python '+path_home+'/ryu/Bruno/server.py &')
+    srv1.cmd('python '+path_home+'/ryu/Bruno/server_semQoS.py &')
     time.sleep(1)
     print('Iniciando Client!!')
-    h1.cmd('python '+path_home+'/ryu/Bruno/client.py &')
+    h1.cmd('python '+path_home+'/ryu/Bruno/client_semQoS.py &')
     time.sleep(1)
     print('Rodada: '+str(i+1))
     for r in range(32,215):
@@ -129,6 +128,6 @@ def myNetwork(i):
 
 if __name__ == '__main__':
     setLogLevel( 'info' )
-    for i in range(0,1):
+    for i in range(0,30):
         myNetwork(i)
         time.sleep(30)

@@ -63,6 +63,7 @@ while True:
 		arq.close()
 
 		#Enviando um pacote ao servidor avisando sobre a atualizacao do arquivo
+		"""
 		dest = '10.0.0.99'
 		destport = '1234'
 		ip = IP(dst=dest)
@@ -71,9 +72,8 @@ while True:
 		t = sr(pkt)
 		print(t)
 		#Fim do Envio
-
+		"""
 		#Abre o VLC para iniciar o envio do video
-		time.sleep(30)
 		#os.system('(sleep 140;echo "quit") | vlc --intf rc /home/bruno/teste_1080p.mp4 --sout udp://'+str(addr[0])+':'+str(recv[1])+' &') #Com QoS
 		os.system('(sleep 140;echo "quit") | vlc --intf rc /home/bruno/teste_1080p.mp4 --sout udp://'+str(addr[0])+':'+str(addr[1])+' &') #Sem QoS
 

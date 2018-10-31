@@ -21,7 +21,6 @@ def myNetwork(i):
 
     net = Mininet( topo=None,
                    build=False,
-                   #autoSetMacs=True,
                    host=CPULimitedHost,
                    link=TCLink,
                    ipBase='10.0.0.0/8')
@@ -34,11 +33,11 @@ def myNetwork(i):
                       port=6633)
 
     info( '*** Add switches\n')
-    s5 = net.addSwitch('s5', cls=OVSKernelSwitch)
-    s2 = net.addSwitch('s2', cls=OVSKernelSwitch)
-    s1 = net.addSwitch('s1', cls=OVSKernelSwitch)
-    s4 = net.addSwitch('s4', cls=OVSKernelSwitch)
     s3 = net.addSwitch('s3', cls=OVSKernelSwitch)
+    s5 = net.addSwitch('s5', cls=OVSKernelSwitch)
+    s4 = net.addSwitch('s4', cls=OVSKernelSwitch)
+    s1 = net.addSwitch('s1', cls=OVSKernelSwitch)
+    s2 = net.addSwitch('s2', cls=OVSKernelSwitch)
 
     info( '*** Add hosts\n')
     h1 = net.addHost('h1', cls=Host, ip='10.0.0.1')
@@ -51,23 +50,42 @@ def myNetwork(i):
     srv1 = net.addHost('srv1', cls=Host, ip='10.0.0.8')
     srv2 = net.addHost('srv2', cls=Host, ip='10.0.0.9')
 
-
     info( '*** Add links\n')
-    net.addLink(h1, s1, 1, 1)
-    net.addLink(h2, s1, 1, 2)
-    net.addLink(h3, s1, 1, 3)
-    net.addLink(srv1, s3, 1, 1)
-    net.addLink(srv2, s3, 1, 2)
-    net.addLink(h4, s4, 1, 1)
-    net.addLink(h5, s4, 1, 2)
-    net.addLink(h6, s5, 1, 1)
-    net.addLink(h7, s5, 1, 2)
-    net.addLink(s1, s2, 5, 1)
-    net.addLink(s3, s2, 5, 2)
-    net.addLink(s4, s2, 5, 3)
-    net.addLink(s5, s2, 5, 4)
-
-
+    s1h1 = {'bw':25}
+    #net.addLink(h1, s1, 1, 1, cls=TCLink , **s1h1)
+    net.addLink(h1, s1, 1, 1, cls=TCLink)
+    s1h2 = {'bw':25}
+    #net.addLink(s1, h2, 2, 1, cls=TCLink , **s1h2)
+    net.addLink(s1, h2, 2, 1, cls=TCLink)
+    s1h3 = {'bw':25}
+    #net.addLink(s1, h3, 3, 1, cls=TCLink , **s1h3)
+    net.addLink(s1, h3, 3, 1, cls=TCLink)
+    s4h4 = {'bw':25}
+    #net.addLink(s4, h4, 1, 1, cls=TCLink , **s4h4)
+    net.addLink(s4, h4, 1, 1, cls=TCLink)
+    s4h5 = {'bw':25}
+    #net.addLink(s4, h5, 2, 1, cls=TCLink , **s4h5)
+    net.addLink(s4, h5, 2, 1, cls=TCLink)
+    s5h6 = {'bw':25}
+    #net.addLink(s5, h6, 1 , 1, cls=TCLink , **s5h6)
+    net.addLink(s5, h6, 1 , 1, cls=TCLink)
+    s5h7 = {'bw':25}
+    #net.addLink(s5, h7, 2, 1, cls=TCLink , **s5h7)
+    net.addLink(s5, h7, 2, 1, cls=TCLink)
+    s3h8 = {'bw':25}
+    #net.addLink(s3, srv1, 1, 1, cls=TCLink , **s3h8)
+    net.addLink(s3, srv1, 1, 1, cls=TCLink)
+    s3h9 = {'bw':25}
+    #net.addLink(s3, srv2, 2, 1, cls=TCLink , **s3h9)
+    net.addLink(s3, srv2, 2, 1, cls=TCLink)
+    s1s2 = {'bw':25}
+    net.addLink(s1, s2, 5, 1, cls=TCLink , **s1s2)
+    s3s2 = {'bw':25}
+    net.addLink(s3, s2, 5, 2, cls=TCLink , **s3s2)
+    s4s2 = {'bw':25}
+    net.addLink(s4, s2,5, 3, cls=TCLink , **s4s2)
+    s5s2 = {'bw':25}
+    net.addLink(s5, s2, 5, 4, cls=TCLink , **s5s2)
 
     info( '*** Starting network\n')
     net.build()
@@ -76,11 +94,11 @@ def myNetwork(i):
         controller.start()
 
     info( '*** Starting switches\n')
+    net.get('s3').start([c0])
+    net.get('s5').start([c0])
+    net.get('s4').start([c0])
     net.get('s1').start([c0])
     net.get('s2').start([c0])
-    net.get('s3').start([c0])
-    net.get('s4').start([c0])
-    net.get('s5').start([c0])
 
     info( '*** Setting routes\n')
     h1.cmd('route add default dev h1-eth1')
@@ -93,31 +111,29 @@ def myNetwork(i):
     srv1.cmd('route add default dev srv1-eth1')
     srv2.cmd('route add default dev srv2-eth1')
 
-
     info( '*** Post configure switches and hosts\n')
     dumpNodeConnections(net.hosts)
 
     #Instala as filas de QoS
-    os.system('python '+path_home+'/ryu/Bruno/plotagem.py &')
-    os.system('python '+path_home+'/ryu/Bruno/admin.py &')
-    os.system('python '+path_home+'/ryu/Bruno/Resultados/dados_ovs.py '+str(i+1)+' 0 &') # 0 = SemIperf
+    os.system('python /home/bruno/ryu/Bruno/plotagem.py &')
+    #os.system('python /home/bruno/ryu/Bruno/admin.py &')
+    os.system('python /home/bruno/ryu/Bruno/Resultados/dados_ovs.py '+str(i+1)+' 0 &') # 0 =  SemIperf
     net.pingAll() #Pinga todos os hosts
-    srv1.cmd('python '+path_home+'/ryu/Bruno/EnviaPacoteUDP_Server.py &') #Envia pacote para instalar a regras de QoS
-    srv1.cmd('python '+path_home+'/ryu/Bruno/server.py &')
+    srv1.cmd('python /home/bruno/ryu/Bruno/EnviaPacoteUDP_Server.py &') #Envia pacote para instalar a regras de QoS
     h2.cmd('iperf -s -u &')
     h3.cmd('iperf -s -u &')
+
     #print('Iperf 1 Iniciado!!!')
-    #srv2.cmd('iperf -c 10.0.0.2 -u -t 205 -i 1 -b 19m &')
+    #srv2.cmd('iperf -c 10.0.0.2 -u -t 500 -i 1 -b 20m &')
     #print('Iperf 2 Iniciado!!!')
-    #srv2.cmd('iperf -c 10.0.0.3 -u -t 205 -i 1 -b 19m &')
+    #srv2.cmd('iperf -c 10.0.0.3 -u -t 500 -i 1 -b 20m &')
     time.sleep(29)
     print('Iniciando Server!!')
-    srv1.cmd('python '+path_home+'/ryu/Bruno/server.py &')
+    srv1.cmd('python /home/bruno/ryu/Bruno/server_semQoS.py &')
     time.sleep(1)
     print('Iniciando Client!!')
-    h1.cmd('python '+path_home+'/ryu/Bruno/client.py &')
+    h1.cmd('python /home/bruno/ryu/Bruno/client_semQoS.py &')
     time.sleep(1)
-    #print('Iniciando Server!!')
     print('Rodada: '+str(i+1))
     for r in range(32,215):
         if r%10 == 0:
@@ -130,6 +146,6 @@ def myNetwork(i):
 
 if __name__ == '__main__':
     setLogLevel( 'info' )
-    for i in range(0,2):
+    for i in range(0,1):
         myNetwork(i)
         time.sleep(30)

@@ -9,7 +9,7 @@ import sys
 import os
 
 path_home = os.getenv("HOME") #Captura o caminho da pasta HOME
-
+path_home = '/home/bruno'
 i=0
 tempo=205
 
@@ -52,7 +52,7 @@ while i<tempo:
     #x.append(i)
     #y1tx.append(tx1 - tx1_aux)
     if i >= 0 and i <=204:
-        lista.append("r3->rx:"+str((tx1-tx1_aux))+" r1->tx:"+str((tx2 - tx2_aux))+'\n')
+        #lista.append("r3->rx:"+str((tx1-tx1_aux))+" r1->tx:"+str((tx2 - tx2_aux))+'\n')
         #lista2.append("r3->tx:"+str((tx3-tx3_aux)*0.000001)+" r1->rx:"+str((tx4 - tx4_aux)*0.000001)+'\n')
         lista.append("s3->rx1:"+str(rx1-rx1_aux)+" s3->rx2:"+str(rx2-rx2_aux)+" s1->tx1:"+str(tx1-tx1_aux)+" s1->tx2:"+str(tx2-tx2_aux)+" s1->tx3:"+str(tx3-tx3_aux)+'\n')
 
@@ -67,11 +67,11 @@ while i<tempo:
 
     #tx3_aux = tx3
     #tx4_aux = tx4
-if sys.argv[2] == '0':
+if sys.argv[2] == '0': #SemIperf
     arq = open(path_home+'/ryu/Bruno/Resultados/Cenario1/SemIperf/teste'+sys.argv[1]+'.txt', 'w')
-elif sys.argv[2] == '1':
+elif sys.argv[2] == '1': #Com1Iperf
     arq = open(path_home+'/ryu/Bruno/Resultados/Cenario1/1Iperf/teste'+sys.argv[1]+'.txt', 'w')
-else:
+else: #Com2Iperf
     arq = open(path_home+'/ryu/Bruno/Resultados/Cenario1/2Iperf/teste'+sys.argv[1]+'.txt', 'w')
 arq.writelines(lista)
 arq.close()
