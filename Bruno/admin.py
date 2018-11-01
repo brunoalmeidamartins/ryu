@@ -7,7 +7,7 @@ from classe import Classe
 import pickle
 
 path_home = os.getenv("HOME") #Captura o caminho da pasta HOME
-
+path_home = '/home/bruno'
 filename=path_home+'/ryu/Bruno/classes.conf'		#Nome do arquivo de classes de servicos
 tx_max=1000000000					#Vazao maxima da rede em bps
 
