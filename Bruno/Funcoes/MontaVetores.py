@@ -147,7 +147,82 @@ def RetornaMediaSaidaPortasBytesPortas(cen,tes):
         somatorio_rx1 = somatorio_rx1 + aux_rx1
         somatorio_rx2 = somatorio_rx2 + aux_rx2
     return somatorio_tx1/30,somatorio_tx2/30,somatorio_tx3/30,somatorio_rx1/30,somatorio_rx2/30
+def criaArquivosEstatistica(cen,test):
+    cenario = cen
+    teste = test
+    lista = [] #Lista que contem as medias dos arquivos
+    for i in range(0,30):
+        aux_tx1 = 0
+        aux_tx2 = 0
+        aux_tx3 = 0
+        aux_rx1 = 0
+        aux_rx2 = 0
+        aux_tx1,aux_tx2,aux_tx3,aux_rx1,aux_rx2 = RetornaSaidaBytesPortas(cenario,teste,str(i+1))
+        lista.append(str(aux_tx1)+' '+str(aux_tx2)+' '+str(aux_tx3)+' '+str(aux_rx1)+' '+str(aux_rx2)+'\n')
+        #somatorio_tx2 = somatorio_tx2 + aux_tx2
+        #somatorio_tx3 = somatorio_tx3 + aux_tx3
+        #somatorio_rx1 = somatorio_rx1 + aux_rx1
+        #somatorio_rx2 = somatorio_rx2 + aux_rx2
+    #return somatorio_tx1/30,somatorio_tx2/30,somatorio_tx3/30,somatorio_rx1/30,somatorio_rx2/30
+    if teste == '0':
+        arq = open(path_home+'/ryu/Bruno/Resultados/Teste/Cenario'+cenario+'_SemIperf.txt', 'w')
+    elif teste == '1':
+        arq = open(path_home+'/ryu/Bruno/Resultados/Teste/Cenario'+cenario+'_1Iperf.txt', 'w')
+    else:
+        arq = open(path_home+'/ryu/Bruno/Resultados/Teste/Cenario'+cenario+'_2Iperf.txt', 'w')
+    arq.writelines(lista)
+    arq.close()
 
+
+    '''
+    cenario = cen
+    teste = test
+    vet_s1_tx1=[]
+    vet_s1_tx2=[]
+    vet_s1_tx3=[]
+    vet_s3_rx1=[]
+    vet_s3_rx2=[]
+    lista = []
+    for j in range(0,30):
+        s1_tx1,s1_tx2,s1_tx3,s3_rx1,s3_rx2=RetornaVetoresArquivos(teste,cenario,str(j+1))
+        #print(len(s1_tx1))
+        for i in range (len(s1_tx1)):
+            lista.append(str(s1_tx1[i])+' '+str(s1_tx2[i])+' '+str(s1_tx3[i])+' '+str(s3_rx1[i])+' '+str(s3_rx2[i])+'\n')
+            #lista.append(str(s1_tx1[i])+' '+str(s1_tx2[i])+' '+str(s1_tx3[i])+' '+str(s3_rx1[i])+'\n')
+    if teste == '0':
+        arq = open(path_home+'/ryu/Bruno/Resultados/Teste/Cenario'+cenario+'_SemIperf.txt', 'w')
+    elif teste == '1':
+        arq = open(path_home+'/ryu/Bruno/Resultados/Teste/Cenario'+cenario+'_1Iperf.txt', 'w')
+    else:
+        arq = open(path_home+'/ryu/Bruno/Resultados/Teste/Cenario'+cenario+'_2Iperf.txt', 'w')
+    arq.writelines(lista)
+    arq.close()
+    '''
+def RetornaVetoresArquivoEstatistica(nome_arquivo):
+    path_arquivo = nome_arquivo
+    arq = open(path_arquivo, 'r')
+    texto = arq.readlines()
+    s1_tx1 = [] #Porta 1 do Switch 1
+    s1_tx2 = [] #Porta 2 do Switch 1
+    s1_tx3 = [] #Porta 3 do Switch 1
+    s3_rx1 = [] #Porta 1 do Switch 3
+    s3_rx2 = [] #Porta 2 do Switch 3
+    for i in texto:
+        vet = i.split(' ')
+        vet[4] = vet[4].replace('\n','')
+        s1_tx1.append(float(vet[0]))
+        s1_tx2.append(float(vet[1]))
+        s1_tx3.append(float(vet[2]))
+        s3_rx1.append(float(vet[3]))
+        s3_rx2.append(float(vet[4]))
+    arq.close()
+    return s1_tx1,s1_tx2,s1_tx3,s3_rx1,s3_rx2
+
+
+#s1_tx1,s1_tx2,s1_tx3,s3_rx1,s3_rx2 = RetornaVetoresArquivoEstatistica('/home/bruno/ryu/Bruno/Resultados/Teste/Cenario1_1Iperf.txt')
+#for i in s1_tx1:
+    #print(i)
+#criaArquivosEstatistica('3','2')
 #print(RetornaMediaSaidaPortasBytesPortas('3','2'))
 #print(RetornaSaidaBytesPortas('3','2','1'))
 #RetornaVetoresComMedias('3','2')
