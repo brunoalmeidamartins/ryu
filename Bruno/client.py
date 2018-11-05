@@ -42,7 +42,7 @@ while cond != 0:
 		#Antes de Enviar a msg FIM abre o aguarda o vlc
 		#os.system('vlc -I rc --rc-host 10.0.0.1:'+porta_servico+' udp://@10.0.0.1:'+porta_servico+' &')
 		#print("Recebendo Video!!!")
-		time.sleep(140) #Aguarda o tempo do video 2:20 ou 140
+		time.sleep(210) #Aguarda o tempo do video 2:20 ou 140
 		#Fim do aguardo do vlc
 		msg = 'FIN'
 		#begin=time.time()

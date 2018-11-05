@@ -76,7 +76,7 @@ while i<tempo:
     ax1.plot(x,y2tx,'g-',label='TXs1 eth2')
     ax1.plot(x,y3tx,'b-',label='TXs1 eth3')
 
-    #ax1.plot(x,y1rx,'y-',label='RXs3 eth1')
+    ax1.plot(x,y1rx,'y-',label='RXs3 eth1')
     #ax1.plot(x,y2rx,'p-',label='RXs3 eth2')
 
     if i==0:

@@ -22,7 +22,7 @@ def myNetwork(i):
 
     net = Mininet( topo=None,
                    build=False,
-                   #autoSetMacs=True,
+                   autoSetMacs=True,
                    host=CPULimitedHost,
                    link=TCLink,
                    ipBase='10.0.0.0/8')
@@ -99,10 +99,16 @@ def myNetwork(i):
     dumpNodeConnections(net.hosts)
 
     #Instala as filas de QoS
-    os.system('python /home/bruno/ryu/Bruno/plotagem.py &')
+    #os.system('cd /home/bruno/ryu;ryu-manager  ~/ryu/Bruno/MeuApp.py --observe-links &') #Inicia o ryu
+    time.sleep(3)
+    print('RYU Iniciado!!')
+    #os.system('python /home/bruno/ryu/Bruno/plotagem.py &')
     os.system('python /home/bruno/ryu/Bruno/admin.py &')
+    #time.sleep(3)
     os.system('python /home/bruno/ryu/Bruno/Resultados/dados_ovs_Cenario2.py '+str(i+1)+' 2 &') # 2 = 2 Iperf
+    #time.sleep(3)
     net.pingAll() #Pinga todos os hosts
+    #time.sleep(3)
     srv1.cmd('python /home/bruno/ryu/Bruno/EnviaPacoteUDP_Server.py &') #Envia pacote para instalar a regras de QoS
     h2.cmd('iperf -s -u &')
     h3.cmd('iperf -s -u &')
@@ -111,15 +117,16 @@ def myNetwork(i):
     srv2.cmd('iperf -c 10.0.0.2 -u -t 500 -i 1 -b 20m &')
     print('Iperf 2 Iniciado!!!')
     srv2.cmd('iperf -c 10.0.0.3 -u -t 500 -i 1 -b 20m &')
-    time.sleep(29)
+    time.sleep(30)
+    print("Rodada: "+str(i+1))
     print('Iniciando Server!!')
-    srv1.cmd('python /home/bruno/ryu/Bruno/server_ComQoS.py &')
-    time.sleep(1)
+    #srv1.cmd('python /home/bruno/ryu/Bruno/server.py &')
+    srv1.cmd('(sleep 140;echo "quit") | vlc --intf rc /home/bruno/teste_1080p.mp4 --sout udp://10.0.0.1:25000 &')
+    time.sleep(5)
     print('Iniciando Client!!')
-    h1.cmd('python /home/bruno/ryu/Bruno/client_ComQoS.py &')
-    time.sleep(1)
-    print('Rodada: '+str(i+1))
-    for r in range(32,215):
+    #h1.cmd('python /home/bruno/ryu/Bruno/client.py &')
+    #time.sleep(3)
+    for r in range(35,220):
         if r%10 == 0:
             print('Tempo: '+str(r)+' Rodada: '+str(i+1))
         time.sleep(1)
@@ -127,9 +134,13 @@ def myNetwork(i):
     #CLI(net)
     info('*** Fim...Aguardando os 30 segundos!!!')
     net.stop()
+    #Termina o Mininet
+    #os.system('mn -c')
+    #info( '*** Starting Network Manager\n')
+    #os.system("/etc/init.d/network-manager start")
 
 if __name__ == '__main__':
     setLogLevel( 'info' )
     for i in range(0,30):
         myNetwork(i)
-        time.sleep(30)
+        time.sleep(5)

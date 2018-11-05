@@ -146,7 +146,7 @@ class MeuApp(app_manager.RyuApp):
             dpid_mont = dpid_mont+str(datapath.id)
             table_id.append([datapath.id,dpid_mont])
             #Insere ovs-manager em cada Switch para o REST
-            r = requests.put('http://localhost:8080/v1.0/conf/switches/'+dpid_mont+'/ovsdb_addr','"tcp:127.0.0.1:6632"')
+            #r = requests.put('http://localhost:8080/v1.0/conf/switches/'+dpid_mont+'/ovsdb_addr','"tcp:127.0.0.1:6632"')
             #r2 = requests.put('http://localhost:8080/v1.0/conf/switches/0000000000000002/ovsdb_addr','"tcp:127.0.0.1:6632"')
 
             #r3 = requests.post('http://localhost:8080/qos/rules/0000000000000001','{"match": {tp_dst": "5002"}, "actions":{"port":'+str(ofproto.OFPP_CONTROLLER)+'}}')
@@ -302,6 +302,47 @@ class MeuApp(app_manager.RyuApp):
                         #Verificando os dados Gravados no arquivo!!
                         #Somente para o Swtich onde esta os Servidores
                         if datapath.id == ID_SWITCH:
+                            ip_servidor = '10.0.0.8'
+                            ip_client = '10.0.0.1'
+                            porta_envio = '25000'
+                            servico_fornecido = 'video'
+
+                            qos = os.popen("ovs-vsctl list qos | grep _uuid | awk '{print $3}'").read().strip('\n')
+
+
+                            os.system('ovs-vsctl set port s1-eth'+str(1)+' qos='+str(qos))
+                            os.system('ovs-vsctl set port s2-eth'+str(1)+' qos='+str(qos))
+                            os.system('ovs-vsctl set port s3-eth'+str(5)+' qos='+str(qos))
+
+
+                            #Acha qual fila eh a QoS pedida
+                            #Carregamento da lista de objetos Classe
+                            classlist = []
+                            if os.path.isfile(filename):
+                            	filec = open(filename,'rb')
+                            	classlist = pickle.load(filec)
+                            	filec.close()
+                            fila_saida = '0' #Fila a ser aplicada
+                            for c in classlist:
+                                if c.nome == servico_fornecido:
+                                    fila_saida = c.id
+                            print('Fila saida: '+str(fila_saida))
+
+                            #Aplica a regra de saida QoS
+                            os.system('ovs-ofctl add-flow s'+str(3)+' priority=40000,dl_type=0x0800,nw_src='+str(ip_servidor)+',nw_dst='+str(ip_client)+',nw_proto=17,tp_dst='+str(porta_envio)+',actions=enqueue:'+str(5)+':'+str(fila_saida))
+                            os.system('ovs-ofctl add-flow s'+str(2)+' priority=40000,dl_type=0x0800,nw_src='+str(ip_servidor)+',nw_dst='+str(ip_client)+',nw_proto=17,tp_dst='+str(porta_envio)+',actions=enqueue:'+str(1)+':'+str(fila_saida))
+                            os.system('ovs-ofctl add-flow s'+str(1)+' priority=40000,dl_type=0x0800,nw_src='+str(ip_servidor)+',nw_dst='+str(ip_client)+',nw_proto=17,tp_dst='+str(porta_envio)+',actions=enqueue:'+str(1)+':'+str(fila_saida))
+                            #print('ovs-ofctl add-flow s' + str(switch_caminho) + ' priority=40000,dl_type=0x0800,nw_dst='+str(ip_client)+',nw_proto=17,tp_dst='+str(porta_envio)+',actions=enqueue:'+str(porta_switch)+':'+str(fila_saida))
+
+
+
+
+
+
+                            '''
+                            DescomentarDepois
+                            '''
+                            '''
                             arq = open('/home/bruno/ryu/Bruno/Dados_QoS_Servidor.txt','r')
                             #arq = open('/home/administrador/ryu/Bruno/Dados_QoS_Servidor.txt','r')
                             texto = arq.read()
@@ -320,9 +361,9 @@ class MeuApp(app_manager.RyuApp):
                             #print("Servico: "+servico_fornecido)
                             #print('-----------------------')
 
-                            '''
-                            Montagem das regras
-                            '''
+
+                            #Montagem das regras
+
                             grafo = nx.MultiGraph()
                             #Obtem os switches
                             switch_list = get_switch(self.topology_api_app, None)
@@ -350,11 +391,11 @@ class MeuApp(app_manager.RyuApp):
                             #print('******************PATH************************')
                             #print(nx.dijkstra_path(grafo,'10.0.0.1','10.0.0.3',weight='cost'))
                             #Fim Montagem grafo
-                            print('***************Path Server->Client**********************')
-                            print(nx.dijkstra_path(grafo,ip_server,ip_client,weight='cost'))
+                            #print('***************Path Server->Client**********************')
+                            #print(nx.dijkstra_path(grafo,ip_server,ip_client,weight='cost'))
                             path_server_client = nx.dijkstra_path(grafo,ip_server,ip_client,weight='cost')
-                            print('***************Path Client->Server***********************')
-                            print(nx.dijkstra_path(grafo,ip_client,ip_server,weight='cost'))
+                            #print('***************Path Client->Server***********************')
+                            #print(nx.dijkstra_path(grafo,ip_client,ip_server,weight='cost'))
                             path_client_server = nx.dijkstra_path(grafo,ip_client,ip_server,weight='cost')
 
                             #Regras
@@ -365,8 +406,8 @@ class MeuApp(app_manager.RyuApp):
                                     mac_client = i[1]
                                 if i[0] == ip_server:
                                     mac_server = i[1]
-                            print('mac_cliente: '+mac_client)
-                            print('mac_server: '+mac_server)
+                            #print('mac_cliente: '+mac_client)
+                            #print('mac_server: '+mac_server)
                             #Aplica QoS nas portas
                             qos = os.popen("ovs-vsctl list qos | grep _uuid | awk '{print $3}'").read().strip('\n')
                             #Excluo a primeira posicao e a ultima, pois sao os IPs
@@ -408,8 +449,17 @@ class MeuApp(app_manager.RyuApp):
                                 #print('ovs-ofctl add-flow s' + str(switch_caminho) + ' priority=40000,dl_type=0x0800,nw_dst='+str(ip_client)+',nw_proto=17,tp_dst='+str(porta_envio)+',actions=enqueue:'+str(porta_switch)+':'+str(fila_saida))
                                 #Teste tempo
                                 os.system('ovs-ofctl add-flow s' + str(switch_caminho) + ' priority=40000,dl_type=0x0800,nw_dst='+str(ip_client)+',nw_proto=17,tp_dst='+str(porta_envio)+',actions=enqueue:'+str(porta_switch)+':'+str(fila_saida))
-                                print('ovs-ofctl add-flow s' + str(switch_caminho) + ' priority=40000,dl_type=0x0800,nw_dst='+str(ip_client)+',nw_proto=17,tp_dst='+str(porta_envio)+',actions=enqueue:'+str(porta_switch)+':'+str(fila_saida))
+                                #print('ovs-ofctl add-flow s' + str(switch_caminho) + ' priority=40000,dl_type=0x0800,nw_dst='+str(ip_client)+',nw_proto=17,tp_dst='+str(porta_envio)+',actions=enqueue:'+str(porta_switch)+':'+str(fila_saida))
+                            '''
 
+
+
+
+
+
+                            '''
+                            DescomentarDepois
+                            '''
 
 
 
@@ -570,6 +620,11 @@ class MeuApp(app_manager.RyuApp):
     https://github.com/osrg/ryu/pull/29/commits/4487c9272e69ab93139baf6a2ee48f3b31bb4f02
     https://github.com/castroflavio/ryu
     '''
+
+    '''
+    Descomentar Depois
+    '''
+    '''
     @set_ev_cls(event.EventSwitchEnter)
     def get_topology_data(self, ev):
         switch_list = get_switch(self.topology_api_app, None)
@@ -594,7 +649,13 @@ class MeuApp(app_manager.RyuApp):
         #print "**********List of links"
         #print self.net.edges()
     '''
+    
+    '''
     Fim Monta topologia
+    '''
+
+    '''
+    Descomentar Depois
     '''
 
 
@@ -602,6 +663,7 @@ class MeuApp(app_manager.RyuApp):
 #Require
 app_manager.require_app('ryu.app.ofctl_rest')
 app_manager.require_app('ryu.app.simple_switch_13_mod')
+#app_manager.require_app('ryu.app.simple_switch_13')
 app_manager.require_app('ryu.app.rest_conf_switch')
 app_manager.require_app('ryu.app.rest_topology')
 #app_manager.require_app('ryu.app.rest_qos_mod')

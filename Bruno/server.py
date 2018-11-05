@@ -63,6 +63,7 @@ while True:
 		arq.close()
 
 		#Enviando um pacote ao servidor avisando sobre a atualizacao do arquivo
+		'''
 		dest = '10.0.0.99'
 		destport = '1234'
 		ip = IP(dst=dest)
@@ -71,13 +72,15 @@ while True:
 		t = sr(pkt)
 		print(t)
 		#Fim do Envio
-
+		'''
 		#Abre o VLC para iniciar o envio do video
-
-		os.system('(sleep 140;echo "quit") | vlc --intf rc /home/bruno/teste_1080p.mp4 --sout udp://'+str(addr[0])+':'+str(recv[1])+' &') #Com QoS
+		time.sleep(5)
+		os.system('(sleep 140;echo "quit") | vlc --intf rc /home/bruno/teste_1080p.mp4 --sout udp://'+str(addr[0])+':'+str(recv[1])+' &') #Com QoS Video 1080p
+		#os.system('ffmpeg -r 25 -i /home/bruno/teste_1080p.mp4 -c:v libx265 -x265-params crf=23 -strict experimental -f mjpeg udp://'+str(addr[0])+':'+str(recv[1])+' &')
+		#os.system('vlc -vvv /home/bruno/teste_1080p.mp4 --sout udp://'+str(addr[0])+':'+str(recv[1])+' vlc://quit &') #Com QoS Video 1080p
+		#os.system('(sleep 140;echo "quit") | vlc --intf rc /home/bruno/teste_720p2.mp4 --sout udp://'+str(addr[0])+':'+str(recv[1])+' &') #Com QoS Video 720p
 		#os.system('(sleep 140;echo "quit") | vlc --intf rc /home/bruno/teste_1080p.mp4 --sout udp://'+str(addr[0])+':'+str(addr[1])+' &') #Sem QoS
-
-		time.sleep(141)
+		time.sleep(209)
 		#os.system('(sleep 5;echo "stats";sleep 3;echo "shutdown") | telnet 10.0.0.1 '+str(recv[1])+' > /home/bruno/ryu/Bruno/StaticsVideo.txt')
 
 		#Teste de destruir as qos

@@ -146,6 +146,6 @@ def myNetwork(i):
 
 if __name__ == '__main__':
     setLogLevel( 'info' )
-    for i in range(0,1):
+    for i in range(0,30):
         myNetwork(i)
         time.sleep(30)
