@@ -189,7 +189,16 @@ def converteBytesEmMegabyte(vetor):#Recebe um vetor
 #S5 = [float(foo) for foo in input.readlines()]
 #input.close()
 
-s1_tx1,s1_tx2,s1_tx3,s3_rx1,s3_rx2=vetores_estatistica('/home/bruno/ryu/Bruno/Resultados/Teste/Cenario1_SemIperf.txt')
+'''
+############################################################################
+Bruno TCC
+############################################################################
+'''
+
+teste = '2Iperf' #SemIperf,1Iperf,2Iperf
+cenario = '2' #1,2,3
+
+s1_tx1,s1_tx2,s1_tx3,s3_rx1,s3_rx2=vetores_estatistica('/home/bruno/ryu/Bruno/Resultados/Teste/Cenario'+cenario+'_'+teste+'.txt')
 
 #Megabits
 #s1_tx1 = converteBytesEmMegabits(s1_tx1)
@@ -275,28 +284,46 @@ ii20=ic(I20,tab)
 #####Impressao dos resultados
 print('\n\nMedia s1_tx1: '+str(media_s1_tx1))
 print('IC s1_tx1: '+str(ic_s1_tx1))
+print('Desvio Padrao: '+str(round(desvioPadrao(s1_tx1),APROX)))
 
 print('\n\nMedia s1_tx2: '+str(media_s1_tx2))
 print('IC s1_tx2: '+str(ic_s1_tx2))
+print('Desvio Padrao: '+str(round(desvioPadrao(s1_tx2),APROX)))
 
 print('\n\nMedia s1_tx3: '+str(media_s1_tx3))
 print('IC s1_tx3: '+str(ic_s1_tx3))
+print('Desvio Padrao: '+str(round(desvioPadrao(s1_tx3),APROX)))
 
 print('\n\nMedia s3_rx1: '+str(media_s3_rx1))
 print('IC s3_rx1: '+str(ic_s3_rx1))
+print('Desvio Padrao: '+str(round(desvioPadrao(s3_rx1),APROX)))
 
 print('\n\nMedia s3_rx2: '+str(media_s3_rx2))
 print('IC s3_rx2: '+str(ic_s3_rx2))
+print('Desvio Padrao: '+str(round(desvioPadrao(s3_rx2),APROX)))
 
 
 
-
+'''
 
 #####Geracao dos graficos
-param1=[media_s3_rx1,media_s1_tx1,media_s3_rx2,media_s1_tx2,media_s1_tx3]
-#param2=[(is5[1]-is5[0])/2,(it5[1]-it5[0])/2,(ie5[1]-ie5[0])/2,(ii5[1]-ii5[0])/2]
-param2=[(ic_s3_rx1[1]-ic_s3_rx1[0])/2,(ic_s1_tx1[1]-ic_s1_tx1[0])/2,(ic_s3_rx2[1]-ic_s3_rx2[0])/2,(ic_s1_tx2[1]-ic_s1_tx2[0])/2,(ic_s1_tx3[1]-ic_s1_tx3[0])/2]
-desenha(param1,param2, 600,'Grafico Cenario 1','0')
+if teste == 'SemIperf':
+	param1=[media_s3_rx1,media_s1_tx1]
+	param2=[(ic_s3_rx1[1]-ic_s3_rx1[0])/2,(ic_s1_tx1[1]-ic_s1_tx1[0])/2]
+	nome = 'Cenario '+cenario+' sem carga de trabalho'
+	desenha(param1,param2, 200,nome,teste)
+elif teste == '1Iperf':
+	param1=[media_s3_rx1,media_s1_tx1,media_s3_rx2,media_s1_tx2]
+	param2=[(ic_s3_rx1[1]-ic_s3_rx1[0])/2,(ic_s1_tx1[1]-ic_s1_tx1[0])/2,(ic_s3_rx2[1]-ic_s3_rx2[0])/2,(ic_s1_tx2[1]-ic_s1_tx2[0])/2]
+	nome = 'Cenario '+cenario+' com uma carga de trabalho'
+	desenha(param1,param2, 600,nome,teste)
+else:
+	param1=[media_s3_rx1,media_s1_tx1,media_s3_rx2,media_s1_tx2,media_s1_tx3]
+	param2=[(ic_s3_rx1[1]-ic_s3_rx1[0])/2,(ic_s1_tx1[1]-ic_s1_tx1[0])/2,(ic_s3_rx2[1]-ic_s3_rx2[0])/2,(ic_s1_tx2[1]-ic_s1_tx2[0])/2,(ic_s1_tx3[1]-ic_s1_tx3[0])/2]
+	nome = 'Cenario '+cenario+' com duas cargas de trabalho'
+	desenha(param1,param2, 950,nome,teste)
+
+'''
 
 '''
 param1=[ms10,mt10,me10,mi10]

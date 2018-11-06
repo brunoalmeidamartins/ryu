@@ -11,15 +11,15 @@ def desenha(y,ic,ymax,title, teste):
 
 	fig,ax = plt.subplots()
 
-	if teste == '0':
-		ps,pt,pe,pi,pa = plt.bar(x,y,width=bar_width,align='center',yerr=ic,ecolor='black')
+	if teste == 'SemIperf':
+		ps,pt = plt.bar(x,y,width=bar_width,align='center',yerr=ic,ecolor='black')
 		ps.set_facecolor('m')
 		ps.set_edgecolor('m')
 		pt.set_facecolor('y')
 		pt.set_edgecolor('y')
 		ax.set_xticklabels(['Entrada\nVideo', 'Saida\nVideo'],fontsize=12)
-	elif teste == '1':
-		ps,pt,pe,pi,pa = plt.bar(x,y,width=bar_width,align='center',yerr=ic,ecolor='black')
+	elif teste == '1Iperf':
+		ps,pt,pe,pi = plt.bar(x,y,width=bar_width,align='center',yerr=ic,ecolor='black')
 		ps.set_facecolor('m')
 		ps.set_edgecolor('m')
 		pt.set_facecolor('y')
