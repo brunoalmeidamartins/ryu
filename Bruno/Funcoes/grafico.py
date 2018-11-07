@@ -45,8 +45,8 @@ def desenha(y,ic,ymax,title, teste):
 
 	ax.set_xticks(x)
 	ax.set_ylim([0,ymax])
-	ax.set_ylabel(u'Megabytes',fontsize=28)
-	ax.tick_params(axis='y',labelsize=20,right='off')
+	ax.set_ylabel(u'Megabits',fontsize=15)
+	ax.tick_params(axis='y',labelsize=13,right='off')
 	ax.tick_params(axis='x',top='off')
 	ax.set_title(title,fontsize=18)
 

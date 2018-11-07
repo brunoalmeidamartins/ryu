@@ -196,24 +196,24 @@ Bruno TCC
 '''
 
 teste = '2Iperf' #SemIperf,1Iperf,2Iperf
-cenario = '2' #1,2,3
+cenario = '3' #1,2,3
 
 s1_tx1,s1_tx2,s1_tx3,s3_rx1,s3_rx2=vetores_estatistica('/home/bruno/ryu/Bruno/Resultados/Teste/Cenario'+cenario+'_'+teste+'.txt')
 
 #Megabits
-#s1_tx1 = converteBytesEmMegabits(s1_tx1)
-#s1_tx2 = converteBytesEmMegabits(s1_tx2)
-#s1_tx3 = converteBytesEmMegabits(s1_tx3)
-#s3_rx1 = converteBytesEmMegabits(s3_rx1)
-#s3_rx2 = converteBytesEmMegabits(s3_rx2)
-
+s1_tx1 = converteBytesEmMegabits(s1_tx1)
+s1_tx2 = converteBytesEmMegabits(s1_tx2)
+s1_tx3 = converteBytesEmMegabits(s1_tx3)
+s3_rx1 = converteBytesEmMegabits(s3_rx1)
+s3_rx2 = converteBytesEmMegabits(s3_rx2)
+'''
 #Megabytes
 s1_tx1 = converteBytesEmMegabyte(s1_tx1)
 s1_tx2 = converteBytesEmMegabyte(s1_tx2)
 s1_tx3 = converteBytesEmMegabyte(s1_tx3)
 s3_rx1 = converteBytesEmMegabyte(s3_rx1)
 s3_rx2 = converteBytesEmMegabyte(s3_rx2)
-
+'''
 #####Valores de tabelas T/Z
 tam = len(s1_tx1)
 
@@ -282,48 +282,65 @@ ii15=ic(I15,tab)
 ii20=ic(I20,tab)
 '''
 #####Impressao dos resultados
-print('\n\nMedia s1_tx1: '+str(media_s1_tx1))
-print('IC s1_tx1: '+str(ic_s1_tx1))
-print('Desvio Padrao: '+str(round(desvioPadrao(s1_tx1),APROX)))
-
-print('\n\nMedia s1_tx2: '+str(media_s1_tx2))
-print('IC s1_tx2: '+str(ic_s1_tx2))
-print('Desvio Padrao: '+str(round(desvioPadrao(s1_tx2),APROX)))
-
-print('\n\nMedia s1_tx3: '+str(media_s1_tx3))
-print('IC s1_tx3: '+str(ic_s1_tx3))
-print('Desvio Padrao: '+str(round(desvioPadrao(s1_tx3),APROX)))
-
+#EntradaVideo
 print('\n\nMedia s3_rx1: '+str(media_s3_rx1))
-print('IC s3_rx1: '+str(ic_s3_rx1))
 print('Desvio Padrao: '+str(round(desvioPadrao(s3_rx1),APROX)))
+print('Variancia: '+str(round(variancia(s3_rx1),APROX)))
+print('IC s3_rx1: '+str(ic_s3_rx1))
 
+#SaidaVideo
+print('\n\nMedia s1_tx1: '+str(media_s1_tx1))
+print('Desvio Padrao: '+str(round(desvioPadrao(s1_tx1),APROX)))
+print('Variancia: '+str(round(variancia(s1_tx1),APROX)))
+print('IC s1_tx1: '+str(ic_s1_tx1))
+
+#EntradaIperf
 print('\n\nMedia s3_rx2: '+str(media_s3_rx2))
-print('IC s3_rx2: '+str(ic_s3_rx2))
 print('Desvio Padrao: '+str(round(desvioPadrao(s3_rx2),APROX)))
+print('Variancia: '+str(round(variancia(s3_rx2),APROX)))
+print('IC s3_rx2: '+str(ic_s3_rx2))
+
+#Saida Iperf 1
+print('\n\nMedia s1_tx2: '+str(media_s1_tx2))
+print('Desvio Padrao: '+str(round(desvioPadrao(s1_tx2),APROX)))
+print('Variancia: '+str(round(variancia(s1_tx2),APROX)))
+print('IC s1_tx2: '+str(ic_s1_tx2))
+
+#Saida Iperf 2
+print('\n\nMedia s1_tx3: '+str(media_s1_tx3))
+print('Desvio Padrao: '+str(round(desvioPadrao(s1_tx3),APROX)))
+print('Variancia: '+str(round(variancia(s1_tx3),APROX)))
+print('IC s1_tx3: '+str(ic_s1_tx3))
+
+
+
+
+
+
+
+
 
 
 
 '''
-
 #####Geracao dos graficos
 if teste == 'SemIperf':
 	param1=[media_s3_rx1,media_s1_tx1]
 	param2=[(ic_s3_rx1[1]-ic_s3_rx1[0])/2,(ic_s1_tx1[1]-ic_s1_tx1[0])/2]
 	nome = 'Cenario '+cenario+' sem carga de trabalho'
-	desenha(param1,param2, 200,nome,teste)
+	desenha(param1,param2, 2000,nome,teste)
 elif teste == '1Iperf':
 	param1=[media_s3_rx1,media_s1_tx1,media_s3_rx2,media_s1_tx2]
 	param2=[(ic_s3_rx1[1]-ic_s3_rx1[0])/2,(ic_s1_tx1[1]-ic_s1_tx1[0])/2,(ic_s3_rx2[1]-ic_s3_rx2[0])/2,(ic_s1_tx2[1]-ic_s1_tx2[0])/2]
 	nome = 'Cenario '+cenario+' com uma carga de trabalho'
-	desenha(param1,param2, 600,nome,teste)
+	desenha(param1,param2, 5000,nome,teste)
 else:
 	param1=[media_s3_rx1,media_s1_tx1,media_s3_rx2,media_s1_tx2,media_s1_tx3]
 	param2=[(ic_s3_rx1[1]-ic_s3_rx1[0])/2,(ic_s1_tx1[1]-ic_s1_tx1[0])/2,(ic_s3_rx2[1]-ic_s3_rx2[0])/2,(ic_s1_tx2[1]-ic_s1_tx2[0])/2,(ic_s1_tx3[1]-ic_s1_tx3[0])/2]
 	nome = 'Cenario '+cenario+' com duas cargas de trabalho'
-	desenha(param1,param2, 950,nome,teste)
-
+	desenha(param1,param2, 8000,nome,teste)
 '''
+
 
 '''
 param1=[ms10,mt10,me10,mi10]

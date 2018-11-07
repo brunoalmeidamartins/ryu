@@ -1,0 +1,25 @@
+
+
+Media s1_tx1: 172.9
+IC s1_tx1: [172.9, 172.9]
+Desvio Padrao: 0.0
+
+
+Media s1_tx2: 0.03
+IC s1_tx2: [0.03, 0.03]
+Desvio Padrao: 0.0
+
+
+Media s1_tx3: 0.03
+IC s1_tx3: [0.03, 0.03]
+Desvio Padrao: 0.0
+
+
+Media s3_rx1: 172.87
+IC s3_rx1: [172.87, 172.87]
+Desvio Padrao: 0.0
+
+
+Media s3_rx2: 0.0
+IC s3_rx2: [0.0, 0.0]
+Desvio Padrao: 0.0

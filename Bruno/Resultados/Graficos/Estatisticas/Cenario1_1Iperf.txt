@@ -1,25 +1,30 @@
 
 
-Media s1_tx1: 77.9
-IC s1_tx1: [77.87, 77.93]
-Desvio Padrao: 0.08
-
-
-Media s1_tx2: 531.04
-IC s1_tx2: [530.91, 531.18]
-Desvio Padrao: 0.36
-
-
-Media s1_tx3: 0.03
-IC s1_tx3: [0.03, 0.03]
+Media s3_rx1: 1382.99
 Desvio Padrao: 0.0
+Variancia: 0.0
+IC s3_rx1: [1382.99, 1382.99]
 
 
-Media s3_rx1: 172.87
-IC s3_rx1: [172.87, 172.87]
+Media s1_tx1: 623.22
+Desvio Padrao: 0.64
+Variancia: 0.41
+IC s1_tx1: [622.99, 623.46]
+
+
+Media s3_rx2: 4272.5
+Desvio Padrao: 2.95
+Variancia: 8.7
+IC s3_rx2: [4271.4, 4273.6]
+
+
+Media s1_tx2: 4248.35
+Desvio Padrao: 2.87
+Variancia: 8.23
+IC s1_tx2: [4247.28, 4249.42]
+
+
+Media s1_tx3: 0.23
 Desvio Padrao: 0.0
-
-
-Media s3_rx2: 534.06
-IC s3_rx2: [533.93, 534.2]
-Desvio Padrao: 0.37
+Variancia: 0.0
+IC s1_tx3: [0.23, 0.23]
