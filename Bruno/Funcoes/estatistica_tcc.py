@@ -322,7 +322,7 @@ print('IC s1_tx3: '+str(ic_s1_tx3))
 
 
 
-'''
+
 #####Geracao dos graficos
 if teste == 'SemIperf':
 	param1=[media_s3_rx1,media_s1_tx1]
@@ -339,7 +339,7 @@ else:
 	param2=[(ic_s3_rx1[1]-ic_s3_rx1[0])/2,(ic_s1_tx1[1]-ic_s1_tx1[0])/2,(ic_s3_rx2[1]-ic_s3_rx2[0])/2,(ic_s1_tx2[1]-ic_s1_tx2[0])/2,(ic_s1_tx3[1]-ic_s1_tx3[0])/2]
 	nome = 'Cenario '+cenario+' com duas cargas de trabalho'
 	desenha(param1,param2, 8000,nome,teste)
-'''
+
 
 
 '''

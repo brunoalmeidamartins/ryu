@@ -92,9 +92,15 @@ Fim da reducao
 
 
 fig,ax1 = plt.subplots()
-ax1.plot(x,y1,'r-',linewidth=1.5,linestyle='-', label='Video - s1')
-ax1.plot(x,y2,'g-',linewidth=1.5,linestyle='-',label='Iperf 1 - s1' )
-ax1.plot(x,y3,'y-',linewidth=1.5,linestyle='-',label='Iperf 2 - s1')
+if teste == '0':
+    ax1.plot(x,y1,'r-',linewidth=1.5,linestyle='-', label=u'Saída Vídeo')
+elif teste == '1':
+    ax1.plot(x,y1,'r-',linewidth=1.5,linestyle='-', label=u'Saída Vídeo')
+    ax1.plot(x,y2,'g-',linewidth=1.5,linestyle='-',label=u'Saída Iperf 1' )
+else:
+    ax1.plot(x,y1,'r-',linewidth=1.5,linestyle='-', label=u'Saída Vídeo')
+    ax1.plot(x,y2,'g-',linewidth=1.5,linestyle='-',label=u'Saída Iperf 1' )
+    ax1.plot(x,y3,'y-',linewidth=1.5,linestyle='-',label=u'Saída Iperf 2')
 #ax1.plot(x,y4,'b',linewidth=1.5,linestyle='-',label='Iperf 1')
 #ax1.plot(x,y5,'g',linewidth=1.5,linestyle='-',label='Iperf 2')
 #ax1.plot(x,y6,'y',linewidth=1.5,linestyle='-',label='Iperf 3')
@@ -140,15 +146,8 @@ ax1.legend(loc='upper right') #Local das legendas
 #ax1.yaxis.label.set_color('c')
 #ax1.xaxis.label.set_color('c')
 
-
-if teste == '0':
-    ax1.set_title('Resultado da saída do vídeo no Switch s1 sem carga de trabalho')
-elif teste == '1':
-    ax1.set_title('Resultado da saída do vídeo no Switch s1 com 1 carga de trabalho')
-else:
-    ax1.set_title('Resultado da saída do vídeo no Switch s1 com 2 cargas de trabalho')
-ax1.set_xlabel('Tempo(s)')
-ax1.set_ylabel('Megabits')
+ax1.set_xlabel('Tempo(s)',fontsize=14)
+ax1.set_ylabel('Megabits',fontsize=16)
 #ax2.set_title('Grafico Iperf')
 #ax2.set_xlabel('tempo(s)')
 #ax2.set_ylabel('Bytes')
