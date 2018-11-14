@@ -328,9 +328,21 @@ class MeuApp(app_manager.RyuApp):
                                     fila_saida = c.id
                             print('Fila saida: '+str(fila_saida))
 
+                            #Aplica a regra de saida QoS
+                            os.system('ovs-ofctl add-flow s'+str(3)+' priority=40000,dl_type=0x0800,nw_src='+str(ip_servidor)+',nw_dst='+str(ip_client)+',nw_proto=17,tp_dst='+str(porta_envio)+',actions=enqueue:'+str(5)+':'+str(fila_saida))
+                            os.system('ovs-ofctl add-flow s'+str(2)+' priority=40000,dl_type=0x0800,nw_src='+str(ip_servidor)+',nw_dst='+str(ip_client)+',nw_proto=17,tp_dst='+str(porta_envio)+',actions=enqueue:'+str(1)+':'+str(fila_saida))
+                            os.system('ovs-ofctl add-flow s'+str(1)+' priority=40000,dl_type=0x0800,nw_src='+str(ip_servidor)+',nw_dst='+str(ip_client)+',nw_proto=17,tp_dst='+str(porta_envio)+',actions=enqueue:'+str(1)+':'+str(fila_saida))
+                            #print('ovs-ofctl add-flow s' + str(switch_caminho) + ' priority=40000,dl_type=0x0800,nw_dst='+str(ip_client)+',nw_proto=17,tp_dst='+str(porta_envio)+',actions=enqueue:'+str(porta_switch)+':'+str(fila_saida))
 
 
 
+
+
+
+                            '''
+                            DescomentarDepois
+                            '''
+                            '''
                             arq = open('/home/bruno/ryu/Bruno/Dados_QoS_Servidor.txt','r')
                             #arq = open('/home/administrador/ryu/Bruno/Dados_QoS_Servidor.txt','r')
                             texto = arq.read()
@@ -438,6 +450,63 @@ class MeuApp(app_manager.RyuApp):
                                 #Teste tempo
                                 os.system('ovs-ofctl add-flow s' + str(switch_caminho) + ' priority=40000,dl_type=0x0800,nw_dst='+str(ip_client)+',nw_proto=17,tp_dst='+str(porta_envio)+',actions=enqueue:'+str(porta_switch)+':'+str(fila_saida))
                                 #print('ovs-ofctl add-flow s' + str(switch_caminho) + ' priority=40000,dl_type=0x0800,nw_dst='+str(ip_client)+',nw_proto=17,tp_dst='+str(porta_envio)+',actions=enqueue:'+str(porta_switch)+':'+str(fila_saida))
+                            '''
+
+
+
+
+
+
+                            '''
+                            DescomentarDepois
+                            '''
+
+
+
+
+
+
+
+                            '''
+                            print('-----------------------------')
+                            print('-------------Teste----------')
+                            switch_list = get_switch(self.topology_api_app, None)
+                            #switches=[switch.dp.id for switch in switch_list]
+                            for i in switch_list:
+                                print(i)
+
+                            Link: Port<dpid=2, port_no=1, LIVE> to Port<dpid=1, port_no=5, LIVE>
+                            Link: Port<dpid=1, port_no=5, LIVE> to Port<dpid=2, port_no=1, LIVE>
+                            Link: Port<dpid=3, port_no=5, LIVE> to Port<dpid=2, port_no=2, LIVE>
+                            Link: Port<dpid=2, port_no=2, LIVE> to Port<dpid=3, port_no=5, LIVE>
+
+
+
+                            links_1 = get_link(self.topology_api_app, None)
+                            for i in links_1:
+                                #Para cada i
+                                #links=[(link.src.dpid,link.dst.dpid,{'port':link.src.port_no}) for link in links_list]
+                                a = str(i)
+                                vet = a.split(',')
+                                vet_aux = []
+                                for t in range(0,len(vet)):
+                                    if t == 4:
+                                        pass
+                                    else:
+                                        vet_aux.append(vet[t])
+                                vet = vet_aux
+                                print(vet)
+                                pass
+
+
+                            print('-----------------------------')
+                            print('-------------FIM Teste----------')
+                            '''
+
+
+                            #print(self.net)
+
+
                 else:
                     #print("UDP!! Nao eh a porta 1234")
                     pass
@@ -552,6 +621,10 @@ class MeuApp(app_manager.RyuApp):
     https://github.com/castroflavio/ryu
     '''
 
+    '''
+    Descomentar Depois
+    '''
+    '''
     @set_ev_cls(event.EventSwitchEnter)
     def get_topology_data(self, ev):
         switch_list = get_switch(self.topology_api_app, None)
@@ -575,6 +648,16 @@ class MeuApp(app_manager.RyuApp):
         #print('-------------------------')
         #print "**********List of links"
         #print self.net.edges()
+    '''
+    
+    '''
+    Fim Monta topologia
+    '''
+
+    '''
+    Descomentar Depois
+    '''
+
 
 #Tudo o que eu quiser iniciar, basta colocar aqui!!
 #Require

@@ -1,7 +1,4 @@
 import matplotlib.pyplot as plt
-#from media_arquivo_bytes_fun import obtemDadosLeitura
-#from media_iperf import obtemVetorIperf
-#from MontaVetores import RetornaVetoresArquivos as vetores
 from MontaVetores import RetornaVetoresComMedias as vetoresMedia
 
 #RetornaVetoresComMedias('3','2')

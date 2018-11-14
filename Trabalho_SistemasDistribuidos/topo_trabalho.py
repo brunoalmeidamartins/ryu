@@ -97,9 +97,9 @@ def myNetwork():
     info( '*** Post configure switches and hosts\n')
     dumpNodeConnections(net.hosts)
     #Instala as filas de QoS
-    os.system('python '+path_home+'/ryu/Bruno/admin.py &')
-    time.sleep(4)
-    print("Filas guardadas no Open vSwitch!!! \n")
+    #os.system('python '+path_home+'/ryu/Bruno/admin.py &')
+    #time.sleep(4)
+    #print("Filas guardadas no Open vSwitch!!! \n")
     CLI(net)
     net.stop()
 
