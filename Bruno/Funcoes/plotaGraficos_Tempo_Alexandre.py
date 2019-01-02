@@ -20,7 +20,6 @@ y5 = [] #s3-RX-Port2
 
 cenario = '3'
 teste = '2'
-
 #y1,y2,y3,y4,y5 = vetores('1','1','15') #Teste, Cenario, num_arq Onde Teste=0,1,2=Iperf,  Cenario=1,2,3, num_arq=[1,...,30]
 y1,y2,y3,y4,y5 = vetoresMedia(cenario,teste) #Cenario,Tese    Onde Cenario=1,2,3 Teste=0,1,2=Iperf,
 
@@ -90,14 +89,14 @@ Fim da reducao
 
 fig,ax1 = plt.subplots()
 if teste == '0':
-    ax1.plot(x,y1,'r-',linewidth=1.5,linestyle='-', label=u'Saída Vídeo')
+    ax1.plot(x,y1,'r-',linewidth=1.5,linestyle='-', label=u'Video Out')
 elif teste == '1':
-    ax1.plot(x,y1,'r-',linewidth=1.5,linestyle='-', label=u'Saída Vídeo')
-    ax1.plot(x,y2,'g-',linewidth=1.5,linestyle='-',label=u'Saída Iperf 1' )
+    ax1.plot(x,y1,'r-',linewidth=1.5,linestyle='-', label=u'Video Out')
+    ax1.plot(x,y2,'g-',linewidth=1.5,linestyle='-',label=u'iPerf 1 Out' )
 else:
-    ax1.plot(x,y1,'r-',linewidth=1.5,linestyle='-', label=u'Saída Vídeo')
-    ax1.plot(x,y2,'g-',linewidth=1.5,linestyle='-',label=u'Saída Iperf 1' )
-    ax1.plot(x,y3,'y-',linewidth=1.5,linestyle='-',label=u'Saída Iperf 2')
+    ax1.plot(x,y1,'r-',linewidth=1.5,linestyle='-', label=u'Video Out')
+    ax1.plot(x,y2,'g-',linewidth=1.5,linestyle='-',label=u'iPerf 1 Out' )
+    ax1.plot(x,y3,'y-',linewidth=1.5,linestyle='-',label=u'iPerf 2 Out')
 #ax1.plot(x,y4,'b',linewidth=1.5,linestyle='-',label='Iperf 1')
 #ax1.plot(x,y5,'g',linewidth=1.5,linestyle='-',label='Iperf 2')
 #ax1.plot(x,y6,'y',linewidth=1.5,linestyle='-',label='Iperf 3')
@@ -143,18 +142,19 @@ ax1.legend(loc='upper right') #Local das legendas
 #ax1.yaxis.label.set_color('c')
 #ax1.xaxis.label.set_color('c')
 
-ax1.set_xlabel('Tempo(s)',fontsize=14)
+ax1.set_xlabel('Time(s)',fontsize=14)
 ax1.set_ylabel('Megabits',fontsize=16)
 #ax2.set_title('Grafico Iperf')
 #ax2.set_xlabel('tempo(s)')
 #ax2.set_ylabel('Bytes')
 
-#plt.show()
+plt.show()
 
-
+'''
 if teste == '0':
     plt.savefig('/home/bruno/ryu/Bruno/Resultados/Graficos/Cenario'+cenario+'_SemIperf.png')
 elif teste == '1':
     plt.savefig('/home/bruno/ryu/Bruno/Resultados/Graficos/Cenario'+cenario+'_1Iperf.png')
 else:
     plt.savefig('/home/bruno/ryu/Bruno/Resultados/Graficos/Cenario'+cenario+'_2Iperf.png')
+'''

@@ -3,9 +3,6 @@
 
 import matplotlib.pyplot as plt
 import numpy as np
-import seaborn as sn
-#sn.set()
-
 
 def desenha(y,ic,ymax,title, teste):
 	color = '#9999ff'
@@ -25,8 +22,7 @@ def desenha(y,ic,ymax,title, teste):
 		ps.set_edgecolor(color)
 		pt.set_facecolor(color1)
 		pt.set_edgecolor(color1)
-		#ax.set_xticklabels([u'Entrada\nVídeo', u'Saida\nVídeo'],fontsize=fonte)
-		ax.set_xticklabels([u'Video\nIn', u'Video\nOut'], fontsize=fonte)
+		ax.set_xticklabels([u'Entrada\nVídeo', u'Saida\nVídeo'],fontsize=fonte)
 	elif teste == '1Iperf':
 		ps,pt,pe,pi = plt.bar(x,y,width=bar_width,align='center',yerr=ic,ecolor='black')
 		ps.set_facecolor(color)
@@ -37,8 +33,7 @@ def desenha(y,ic,ymax,title, teste):
 		pe.set_edgecolor(color)
 		pi.set_facecolor(color2)
 		pi.set_edgecolor(color2)
-		#ax.set_xticklabels([u'Entrada\nVídeo', u'Saída\nVídeo', 'Entrada\nIperf', u'Saída\nIperf 1'],fontsize=fonte)
-		ax.set_xticklabels([u'Video\nIn', u'Video\nOut', 'iPerf\nOut', u'iPerf 1\nOut'], fontsize=fonte)
+		ax.set_xticklabels([u'Entrada\nVídeo', u'Saída\nVídeo', 'Entrada\nIperf', u'Saída\nIperf 1'],fontsize=fonte)
 	else:
 		ps,pt,pe,pi,pa = plt.bar(x,y,width=bar_width,align='center',yerr=ic,ecolor='black')
 		ps.set_facecolor(color)
@@ -51,9 +46,7 @@ def desenha(y,ic,ymax,title, teste):
 		pi.set_edgecolor(color2)
 		pa.set_facecolor(color3)
 		pa.set_edgecolor(color3)
-		#ax.set_xticklabels([u'Entrada\nVídeo', u'Saida\nVídeo', 'Entrada\nIperf', u'Saída\nIperf 1',u'Saída\nIperf 2'],fontsize=fonte)
-		ax.set_xticklabels([u'Video\nIn', u'Video\nOut', 'iPerf\nIn', u'iPerf 1\nOut', u'iPerf 2\nOut'],fontsize=fonte)
-
+		ax.set_xticklabels([u'Entrada\nVídeo', u'Saida\nVídeo', 'Entrada\nIperf', u'Saída\nIperf 1',u'Saída\nIperf 2'],fontsize=fonte)
 
 	ax.set_xticks(x)
 	ax.set_ylim([0,ymax])

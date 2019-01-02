@@ -196,7 +196,7 @@ Bruno TCC
 '''
 
 teste = '2Iperf' #SemIperf,1Iperf,2Iperf
-cenario = '3' #1,2,3
+cenario = '1' #1,2,3
 
 s1_tx1,s1_tx2,s1_tx3,s3_rx1,s3_rx2=vetores_estatistica('/home/bruno/ryu/Bruno/Resultados/Teste/Cenario'+cenario+'_'+teste+'.txt')
 
